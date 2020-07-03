@@ -63,6 +63,37 @@ static uint8_t gtp_cause_from_pfcp(uint8_t pfcp_cause)
 
     return OGS_GTP_CAUSE_SYSTEM_FAILURE;
 }
+static int sbi_status_from_pfcp(uint8_t pfcp_cause)
+{
+    switch (pfcp_cause) {
+    case OGS_PFCP_CAUSE_REQUEST_ACCEPTED:
+        return OGS_SBI_HTTP_STATUS_OK;
+    case OGS_PFCP_CAUSE_REQUEST_REJECTED:
+        return OGS_SBI_HTTP_STATUS_FORBIDDEN;
+    case OGS_PFCP_CAUSE_SESSION_CONTEXT_NOT_FOUND:
+        return OGS_SBI_HTTP_STATUS_NOT_FOUND;
+    case OGS_PFCP_CAUSE_MANDATORY_IE_MISSING:
+    case OGS_PFCP_CAUSE_CONDITIONAL_IE_MISSING:
+    case OGS_PFCP_CAUSE_INVALID_LENGTH:
+    case OGS_PFCP_CAUSE_MANDATORY_IE_INCORRECT:
+    case OGS_PFCP_CAUSE_INVALID_FORWARDING_POLICY:
+    case OGS_PFCP_CAUSE_INVALID_F_TEID_ALLOCATION_OPTION:
+    case OGS_PFCP_CAUSE_RULE_CREATION_MODIFICATION_FAILURE:
+    case OGS_PFCP_CAUSE_PFCP_ENTITY_IN_CONGESTION:
+    case OGS_PFCP_CAUSE_NO_RESOURCES_AVAILABLE:
+        return OGS_SBI_HTTP_STATUS_BAD_REQUEST;
+    case OGS_PFCP_CAUSE_NO_ESTABLISHED_PFCP_ASSOCIATION:
+        return OGS_SBI_HTTP_STATUS_GATEWAY_TIMEOUT;
+    case OGS_PFCP_CAUSE_SERVICE_NOT_SUPPORTED:
+        return OGS_SBI_HTTP_STATUS_SERVICE_UNAVAILABLE;
+    case OGS_PFCP_CAUSE_SYSTEM_FAILURE:
+        return OGS_SBI_HTTP_STATUS_INTERNAL_SERVER_ERROR;
+    default:
+        return OGS_SBI_HTTP_STATUS_INTERNAL_SERVER_ERROR;
+    }
+
+    return OGS_SBI_HTTP_STATUS_INTERNAL_SERVER_ERROR;
+}
 
 void smf_n4_handle_association_setup_request(
         ogs_pfcp_node_t *node, ogs_pfcp_xact_t *xact, 
@@ -144,11 +175,15 @@ void smf_5gc_n4_handle_session_establishment_response(
 {
     ogs_pfcp_f_seid_t *up_f_seid = NULL;
 
-    ogs_assert(sess);
     ogs_assert(xact);
     ogs_assert(rsp);
 
     ogs_pfcp_xact_commit(xact);
+
+    if (!sess) {
+        ogs_warn("No Context");
+        return;
+    }
 
     if (rsp->up_f_seid.presence == 0) {
         ogs_error("No UP F-SEID");
@@ -164,6 +199,8 @@ void smf_5gc_n4_handle_session_establishment_response(
         ogs_error("No Cause");
         return;
     }
+
+    ogs_assert(sess);
 
     /* UP F-SEID */
     up_f_seid = rsp->up_f_seid.data;
@@ -206,7 +243,7 @@ void smf_5gc_n4_handle_session_modification_response(
                     "PFCP Cause[%d] : No Accepted", rsp->cause.u8);
             ogs_error("%s", strerror);
             smf_sbi_send_sm_context_update_error(session,
-                    OGS_SBI_HTTP_STATUS_BAD_REQUEST, strerror,
+                    sbi_status_from_pfcp(rsp->cause.u8), strerror,
                     NULL, NULL, NULL);
             ogs_free(strerror);
             return;
@@ -252,7 +289,7 @@ void smf_5gc_n4_handle_session_deletion_response(
                     "PFCP Cause[%d] : No Accepted", rsp->cause.u8);
             ogs_error("%s", strerror);
             ogs_sbi_server_send_error(session,
-                    OGS_SBI_HTTP_STATUS_BAD_REQUEST, NULL, strerror, NULL);
+                    sbi_status_from_pfcp(rsp->cause.u8), NULL, strerror, NULL);
             ogs_free(strerror);
             return;
         }

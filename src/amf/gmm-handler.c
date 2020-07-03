@@ -894,11 +894,6 @@ int gmm_handle_ul_nas_transport(amf_ue_t *amf_ue,
                     OpenAPI_nf_type_SMF, sess, NULL,
                     amf_nsmf_pdu_session_build_create_sm_context);
 
-        } else if (gsm_header->message_type ==
-                OGS_NAS_5GS_PDU_SESSION_RELEASE_COMPLETE) {
-            ogs_fatal("Nothing");
-
-
         } else {
 
             if (!SESSION_CONTEXT_IN_SMF(sess)) {

@@ -223,38 +223,45 @@ void smf_5gc_n4_handle_session_modification_response(
         smf_sess_t *sess, ogs_pfcp_xact_t *xact,
         ogs_pfcp_session_modification_response_t *rsp)
 {
+    int status = 0;
     ogs_sbi_session_t *session = NULL;
-    smf_bearer_t *bearer = NULL;
 
-    ogs_assert(sess);
-    session = sess->sbi.session;
-    ogs_assert(session);
     ogs_assert(xact);
     ogs_assert(rsp);
 
-    bearer = smf_default_bearer_in_sess(sess);
-    ogs_assert(bearer);
+    session = xact->assoc_session;
+    ogs_assert(session);
 
     ogs_pfcp_xact_commit(xact);
 
+    status = OGS_SBI_HTTP_STATUS_OK;
+
+    if (!sess) {
+        ogs_warn("No Context");
+        status = OGS_SBI_HTTP_STATUS_NOT_FOUND;
+    }
+
     if (rsp->cause.presence) {
         if (rsp->cause.u8 != OGS_PFCP_CAUSE_REQUEST_ACCEPTED) {
-            char *strerror = ogs_msprintf(
-                    "PFCP Cause[%d] : No Accepted", rsp->cause.u8);
-            ogs_error("%s", strerror);
-            smf_sbi_send_sm_context_update_error(session,
-                    sbi_status_from_pfcp(rsp->cause.u8), strerror,
-                    NULL, NULL, NULL);
-            ogs_free(strerror);
-            return;
+            ogs_warn("Cause[%d] : No Accepted", rsp->cause.u8);
+            status = sbi_status_from_pfcp(rsp->cause.u8);
         }
     } else {
         ogs_error("No Cause");
-        smf_sbi_send_sm_context_update_error(session,
-                OGS_SBI_HTTP_STATUS_BAD_REQUEST,
-                "[PFCP] No Cause", NULL, NULL, NULL);
+        status = OGS_SBI_HTTP_STATUS_BAD_REQUEST;
+    }
+
+    if (status != OGS_SBI_HTTP_STATUS_OK) {
+        char *strerror = ogs_msprintf(
+                "PFCP Cause[%d] : No Accepted", rsp->cause.u8);
+        ogs_error("%s", strerror);
+        smf_sbi_send_sm_context_update_error(session, status, strerror,
+                NULL, NULL, NULL);
+        ogs_free(strerror);
         return;
     }
+
+    ogs_assert(sess);
 
     /* UPDATE_UpCnxState - SYNC */
     sess->smfUpCnxState = sess->ueUpCnxState;
@@ -266,6 +273,7 @@ void smf_5gc_n4_handle_session_deletion_response(
         smf_sess_t *sess, ogs_pfcp_xact_t *xact,
         ogs_pfcp_session_deletion_response_t *rsp)
 {
+    int status = 0;
     int trigger;
 
     ogs_sbi_session_t *session = NULL;
@@ -273,39 +281,50 @@ void smf_5gc_n4_handle_session_deletion_response(
     ogs_sbi_message_t sendmsg;
     ogs_sbi_response_t *response = NULL;
 
-    ogs_assert(sess);
-    session = sess->sbi.session;
-    ogs_assert(session);
+    ogs_assert(xact);
     ogs_assert(rsp);
 
+    session = xact->assoc_session;
+    ogs_assert(session);
     trigger = xact->trigger;
     ogs_assert(trigger);
 
     ogs_pfcp_xact_commit(xact);
 
+    status = OGS_SBI_HTTP_STATUS_OK;
+
+    if (!sess) {
+        ogs_warn("No Context");
+        status = OGS_SBI_HTTP_STATUS_NOT_FOUND;
+    }
+
     if (rsp->cause.presence) {
         if (rsp->cause.u8 != OGS_PFCP_CAUSE_REQUEST_ACCEPTED) {
-            char *strerror = ogs_msprintf(
-                    "PFCP Cause[%d] : No Accepted", rsp->cause.u8);
-            ogs_error("%s", strerror);
-            ogs_sbi_server_send_error(session,
-                    sbi_status_from_pfcp(rsp->cause.u8), NULL, strerror, NULL);
-            ogs_free(strerror);
-            return;
+            ogs_warn("Cause[%d] : No Accepted", rsp->cause.u8);
+            status = sbi_status_from_pfcp(rsp->cause.u8);
         }
     } else {
         ogs_error("No Cause");
-        ogs_sbi_server_send_error(session,
-                OGS_SBI_HTTP_STATUS_BAD_REQUEST, NULL,
-                "[PFCP] No Cause", NULL);
+        status = OGS_SBI_HTTP_STATUS_BAD_REQUEST;
+    }
+
+    if (status != OGS_SBI_HTTP_STATUS_OK) {
+        char *strerror = ogs_msprintf(
+                "PFCP Cause[%d] : No Accepted", rsp->cause.u8);
+        ogs_error("%s", strerror);
+        ogs_sbi_server_send_error(session, status, NULL, NULL, NULL);
+        ogs_free(strerror);
         return;
     }
+
+    ogs_assert(sess);
 
     if (trigger == OGS_PFCP_5GC_DELETE_TRIGGER_UE_REQUESTED) {
 
         smf_sbi_send_sm_context_updated_data_in_session_deletion(sess);
 
     } else {
+
         memset(&sendmsg, 0, sizeof(sendmsg));
 
         response = ogs_sbi_build_response(

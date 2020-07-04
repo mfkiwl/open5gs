@@ -76,6 +76,15 @@ int amf_sbi_open(void)
 
     ogs_sbi_server_start_all(server_cb);
 
+    /*
+     * The connection between NF and NRF is a little special.
+     *
+     * NF and NRF share nf_instance. I get the NRF EndPoint(client) information
+     * the configuration file via lib/sbi/context.c.
+     * And, the NFService information will be transmitted to NRF.
+     *
+     * ogs_sbi_self()->nf_instance_id means NF's InstanceId.
+     */
     ogs_list_for_each(&ogs_sbi_self()->nf_instance_list, nf_instance) {
         ogs_sbi_nf_service_t *service = NULL;
 

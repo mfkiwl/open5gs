@@ -68,9 +68,6 @@ ogs_sbi_client_t *ogs_sbi_client_find(ogs_sockaddr_t *addr);
 
 void ogs_sbi_client_send_request(
         ogs_sbi_client_t *client, ogs_sbi_request_t *request, void *data);
-void ogs_sbi_client_send_request_to_nf_instance(
-        ogs_sbi_nf_instance_t *nf_instance,
-        ogs_sbi_request_t *request, void *data);
 
 #ifdef __cplusplus
 }

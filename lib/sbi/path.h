@@ -29,7 +29,7 @@ extern "C" {
 typedef ogs_sbi_request_t *(*ogs_sbi_build_f)(
         ogs_sbi_object_t *sbi_object, void *data);
 
-void ogs_sbi_send(
+void ogs_sbi_send_to_nf_instance(
         ogs_sbi_nf_instance_t *nf_instance, ogs_sbi_object_t *sbi_object);
 bool ogs_sbi_discover_and_send(
         OpenAPI_nf_type_e nf_type, ogs_sbi_object_t *sbi_object, void *data,

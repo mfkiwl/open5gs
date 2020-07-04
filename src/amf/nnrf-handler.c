@@ -343,6 +343,6 @@ void amf_nnrf_handle_nf_discover(
                 OpenAPI_nf_type_ToString(sbi_object->nf_type));
         }
     } else {
-        ogs_sbi_send(nf_instance, sbi_object);
+        ogs_sbi_send_to_nf_instance(nf_instance, sbi_object);
     }
 }

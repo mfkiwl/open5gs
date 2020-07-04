@@ -60,7 +60,7 @@ static ogs_sbi_nf_instance_t *find_or_discover_nf_instance(
 }
 
 void ogs_sbi_send(
-        ogs_sbi_object_t *sbi_object, ogs_sbi_nf_instance_t *nf_instance)
+        ogs_sbi_nf_instance_t *nf_instance, ogs_sbi_object_t *sbi_object)
 {
     ogs_sbi_request_t *request = NULL;
 
@@ -102,7 +102,7 @@ bool ogs_sbi_discover_and_send(
     if (nrf == false && nf == false) return false;
     if (!nf_instance) return true;
 
-    ogs_sbi_send(sbi_object, nf_instance);
+    ogs_sbi_send(nf_instance, sbi_object);
 
     return true;
 }

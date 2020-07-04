@@ -857,38 +857,38 @@ int gmm_handle_ul_nas_transport(amf_ue_t *amf_ue,
         ogs_pkbuf_put_data(sess->payload_container,
                 payload_container->buffer, payload_container->length);
 
-        if (ul_nas_transport->presencemask &
-                OGS_NAS_5GS_UL_NAS_TRANSPORT_S_NSSAI_PRESENT) {
-            ogs_s_nssai_t s_nssai;
-            if (ogs_nas_parse_s_nssai(&s_nssai, nas_s_nssai) != 0) {
-                selected_s_nssai =
-                    amf_find_s_nssai(&amf_ue->tai.plmn_id, &s_nssai);
-            }
-        }
-
-        if (!selected_s_nssai) {
-            if (amf_ue->num_of_requested_nssai) {
-                selected_s_nssai = &amf_ue->requested_nssai[0];
-            }
-        }
-
-        if (!selected_s_nssai) {
-            ogs_error("No S_NSSAI : Set default S_NSSAI using AMF config");
-            selected_s_nssai = &amf_self()->plmn_support[0].s_nssai[0];
-            ogs_assert(selected_s_nssai);
-        }
-
-        memcpy(&sess->s_nssai, selected_s_nssai, sizeof(ogs_s_nssai_t));
-
-        if (ul_nas_transport->presencemask &
-                OGS_NAS_5GS_UL_NAS_TRANSPORT_DNN_PRESENT) {
-            if (sess->dnn)
-                ogs_free(sess->dnn);
-            sess->dnn = ogs_strdup(dnn->value);
-        }
-
         if (gsm_header->message_type ==
                 OGS_NAS_5GS_PDU_SESSION_ESTABLISHMENT_REQUEST) {
+
+            if (ul_nas_transport->presencemask &
+                    OGS_NAS_5GS_UL_NAS_TRANSPORT_S_NSSAI_PRESENT) {
+                ogs_s_nssai_t s_nssai;
+                if (ogs_nas_parse_s_nssai(&s_nssai, nas_s_nssai) != 0) {
+                    selected_s_nssai =
+                        amf_find_s_nssai(&amf_ue->tai.plmn_id, &s_nssai);
+                }
+            }
+
+            if (!selected_s_nssai) {
+                if (amf_ue->num_of_requested_nssai) {
+                    selected_s_nssai = &amf_ue->requested_nssai[0];
+                }
+            }
+
+            if (!selected_s_nssai) {
+                ogs_error("No S_NSSAI : Set default S_NSSAI using AMF config");
+                selected_s_nssai = &amf_self()->plmn_support[0].s_nssai[0];
+                ogs_assert(selected_s_nssai);
+            }
+
+            memcpy(&sess->s_nssai, selected_s_nssai, sizeof(ogs_s_nssai_t));
+
+            if (ul_nas_transport->presencemask &
+                    OGS_NAS_5GS_UL_NAS_TRANSPORT_DNN_PRESENT) {
+                if (sess->dnn)
+                    ogs_free(sess->dnn);
+                sess->dnn = ogs_strdup(dnn->value);
+            }
 
             amf_sess_sbi_discover_and_send(
                     OpenAPI_nf_type_SMF, sess, NULL,
@@ -897,8 +897,8 @@ int gmm_handle_ul_nas_transport(amf_ue_t *amf_ue,
         } else {
 
             if (!SESSION_CONTEXT_IN_SMF(sess)) {
-                ogs_error("[%s] Session Context is not in SMF [%d]",
-                    amf_ue->supi, sess->psi);
+                ogs_error("[%s:%d] Session Context is not in SMF [%d]",
+                    amf_ue->supi, sess->psi, gsm_header->message_type);
                 nas_5gs_send_back_5gsm_message(sess,
                     OGS_5GSM_CAUSE_PDU_SESSION_DOES_NOT_EXIST);
                 return OGS_ERROR;

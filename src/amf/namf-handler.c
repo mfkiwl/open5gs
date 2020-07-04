@@ -207,7 +207,7 @@ int amf_namf_callback_handle_sm_context_status(
     sess = amf_sess_find_by_psi(amf_ue, pdu_session_identity);
     if (!sess) {
         status = OGS_SBI_HTTP_STATUS_NOT_FOUND;
-        ogs_error("[%s] Cannot find session", amf_ue->supi);
+        ogs_warn("[%s] Cannot find session", amf_ue->supi);
         goto cleanup;
     }
 

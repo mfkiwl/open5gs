@@ -124,7 +124,6 @@ typedef struct ogs_guami_s {
 
 uint32_t ogs_amf_id_hexdump(ogs_amf_id_t *amf_id);
 
-#define OGS_AMFIDSTRLEN    (sizeof(ogs_amf_id_t)*2+1)
 ogs_amf_id_t *ogs_amf_id_from_string(ogs_amf_id_t *amf_id, const char *hex);
 char *ogs_amf_id_to_string(ogs_amf_id_t *amf_id);
 

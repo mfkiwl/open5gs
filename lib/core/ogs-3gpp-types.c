@@ -130,6 +130,7 @@ ogs_amf_id_t *ogs_amf_id_from_string(ogs_amf_id_t *amf_id, const char *hex)
     return amf_id;
 }
 
+#define OGS_AMFIDSTRLEN    (sizeof(ogs_amf_id_t)*2+1)
 char *ogs_amf_id_to_string(ogs_amf_id_t *amf_id)
 {
     char *str = NULL;

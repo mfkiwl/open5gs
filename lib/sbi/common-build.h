@@ -31,6 +31,9 @@ OpenAPI_plmn_id_nid_t *ogs_sbi_common_build_plmn_id_nid(
         ogs_plmn_id_t *plmn_id, uint8_t *nid);
 void ogs_sbi_common_free_plmn_id_nid(OpenAPI_plmn_id_nid_t *PlmnIdNid);
 
+OpenAPI_guami_t *ogs_sbi_common_build_guami(ogs_guami_t *guami);
+void ogs_sbi_common_free_guami(OpenAPI_guami_t *Guami);
+
 OpenAPI_nr_location_t *ogs_sbi_common_build_nr_location(
     ogs_5gs_tai_t *tai, ogs_nr_cgi_t *nr_cgi);
 void ogs_sbi_common_free_nr_location(OpenAPI_nr_location_t *NrLocation);

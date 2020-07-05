@@ -28,14 +28,12 @@ ogs_sbi_request_t *amf_nsmf_pdu_session_build_create_sm_context(
     ogs_sbi_server_t *server = NULL;
     ogs_sbi_header_t header;
 
-    char buf[OGS_AMFIDSTRLEN];
     amf_ue_t *amf_ue = NULL;
 
     OpenAPI_sm_context_create_data_t SmContextCreateData;
     OpenAPI_snssai_t sNssai;
     OpenAPI_snssai_t hplmnSnssai;
     OpenAPI_ref_to_binary_data_t n1SmMsg;
-    OpenAPI_guami_t guami;
     OpenAPI_user_location_t ueLocation;
 
     ogs_assert(sess);
@@ -81,11 +79,7 @@ ogs_sbi_request_t *amf_nsmf_pdu_session_build_create_sm_context(
         SmContextCreateData.hplmn_snssai = &hplmnSnssai;
     }
 
-    ogs_assert(amf_ue->guami);
-    guami.amf_id = ogs_amf_id_to_string(&amf_ue->guami->amf_id, buf);
-    guami.plmn_id = ogs_sbi_common_build_plmn_id(&amf_ue->tai.plmn_id);
-    SmContextCreateData.guami = &guami;
-
+    SmContextCreateData.guami = ogs_sbi_common_build_guami(amf_ue->guami);
     SmContextCreateData.an_type = amf_ue->nas.access_type; 
 
     memset(&header, 0, sizeof(header));
@@ -135,8 +129,8 @@ ogs_sbi_request_t *amf_nsmf_pdu_session_build_create_sm_context(
         ogs_free(sNssai.sd);
     if (hplmnSnssai.sd)
         ogs_free(hplmnSnssai.sd);
-    if (guami.plmn_id)
-        ogs_sbi_common_free_plmn_id(guami.plmn_id);
+    if (SmContextCreateData.guami)
+        ogs_sbi_common_free_guami(SmContextCreateData.guami);
     if (SmContextCreateData.gpsi)
         ogs_free(SmContextCreateData.gpsi);
     if (ueLocation.nr_location)

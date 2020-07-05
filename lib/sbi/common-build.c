@@ -82,6 +82,34 @@ void ogs_sbi_common_free_plmn_id_nid(OpenAPI_plmn_id_nid_t *PlmnIdNid)
     ogs_free(PlmnIdNid);
 }
 
+OpenAPI_guami_t *ogs_sbi_common_build_guami(ogs_guami_t *guami)
+{
+    OpenAPI_guami_t *Guami = NULL;
+
+    ogs_assert(guami);
+
+    Guami = ogs_calloc(1, sizeof(*Guami));
+    ogs_assert(Guami);
+
+    Guami->plmn_id = ogs_sbi_common_build_plmn_id(&guami->plmn_id);
+    ogs_assert(Guami->plmn_id);
+    Guami->amf_id = ogs_amf_id_to_string2(&guami->amf_id);
+    ogs_assert(Guami->amf_id);
+
+    return Guami;
+}
+
+void ogs_sbi_common_free_guami(OpenAPI_guami_t *Guami)
+{
+    ogs_assert(Guami);
+
+    if (Guami->plmn_id)
+        ogs_sbi_common_free_plmn_id(Guami->plmn_id);
+    if (Guami->amf_id)
+        ogs_free(Guami->amf_id);
+    ogs_free(Guami);
+}
+
 OpenAPI_nr_location_t *ogs_sbi_common_build_nr_location(
     ogs_5gs_tai_t *tai, ogs_nr_cgi_t *nr_cgi)
 {

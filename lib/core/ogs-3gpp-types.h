@@ -117,11 +117,17 @@ ED2(uint8_t set2:2;,
     uint8_t pointer:6;)
 } __attribute__ ((packed)) ogs_amf_id_t;
 
+typedef struct ogs_guami_s {
+    ogs_plmn_id_t plmn_id;
+    ogs_amf_id_t amf_id;
+} ogs_guami_t;
+
 uint32_t ogs_amf_id_hexdump(ogs_amf_id_t *amf_id);
 
 #define OGS_AMFIDSTRLEN    (sizeof(ogs_amf_id_t)*2+1)
 ogs_amf_id_t *ogs_amf_id_from_string(ogs_amf_id_t *amf_id, const char *hex);
 char *ogs_amf_id_to_string(ogs_amf_id_t *amf_id, char *buf);
+char *ogs_amf_id_to_string2(ogs_amf_id_t *amf_id);
 
 uint8_t ogs_amf_region_id(ogs_amf_id_t *amf_id);
 uint16_t ogs_amf_set_id(ogs_amf_id_t *amf_id);

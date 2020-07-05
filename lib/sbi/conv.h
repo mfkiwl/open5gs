@@ -58,6 +58,7 @@ void ogs_sbi_parse_plmn_id_nid(
 void ogs_sbi_free_plmn_id_nid(OpenAPI_plmn_id_nid_t *PlmnIdNid);
 
 OpenAPI_guami_t *ogs_sbi_build_guami(ogs_guami_t *guami);
+void ogs_sbi_parse_guami(ogs_guami_t *guami, OpenAPI_guami_t *Guami);
 void ogs_sbi_free_guami(OpenAPI_guami_t *Guami);
 
 OpenAPI_nr_location_t *ogs_sbi_build_nr_location(

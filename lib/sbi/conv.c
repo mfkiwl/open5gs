@@ -337,6 +337,17 @@ OpenAPI_guami_t *ogs_sbi_build_guami(ogs_guami_t *guami)
     return Guami;
 }
 
+void ogs_sbi_parse_guami(ogs_guami_t *guami, OpenAPI_guami_t *Guami)
+{
+    ogs_assert(guami);
+    ogs_assert(Guami);
+    ogs_assert(Guami->amf_id);
+    ogs_assert(Guami->plmn_id);
+
+    ogs_amf_id_from_string(&guami->amf_id, Guami->amf_id);
+    ogs_sbi_parse_plmn_id(&guami->plmn_id, Guami->plmn_id);
+}
+
 void ogs_sbi_free_guami(OpenAPI_guami_t *Guami)
 {
     ogs_assert(Guami);

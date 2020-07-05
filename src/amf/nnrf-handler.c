@@ -194,8 +194,6 @@ bool amf_nnrf_handle_nf_status_notify(
             return false;
         }
 
-        amf_sbi_setup_client_callback(nf_instance);
-
     } else if (NotificationData->event ==
             OpenAPI_notification_event_type_NF_DEREGISTERED) {
         nf_instance = ogs_sbi_nf_instance_find(NFProfile->nf_instance_id);
@@ -286,8 +284,6 @@ void amf_nnrf_handle_nf_discover(
                 AMF_NF_INSTANCE_CLEAR("NRF-discover", nf_instance);
                 continue;
             }
-
-            amf_sbi_setup_client_callback(nf_instance);
 
             if (!OGS_SBI_NF_INSTANCE_GET(
                         sbi_object->nf_types, nf_instance->nf_type))

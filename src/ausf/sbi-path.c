@@ -137,6 +137,7 @@ void ausf_sbi_discover_and_send(
     ausf_ue->sbi.nf_state_registered = ausf_nf_state_registered;
     ausf_ue->sbi.client_wait.duration =
         ausf_timer_cfg(AUSF_TIMER_SBI_CLIENT_WAIT)->duration;
+    ausf_ue->sbi.client_cb = client_cb;
 
     if (ogs_sbi_discover_and_send(
             nf_type, &ausf_ue->sbi, data, (ogs_sbi_build_f)build) != true) {

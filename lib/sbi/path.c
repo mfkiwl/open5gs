@@ -69,6 +69,7 @@ void ogs_sbi_send(
     request = sbi_object->request;
     ogs_assert(request);
     ogs_assert(sbi_object->client_wait.duration);
+    ogs_assert(sbi_object->client_cb);
 
     ogs_assert(nf_instance);
 
@@ -103,7 +104,8 @@ void ogs_sbi_send(
     ogs_timer_start(sbi_object->client_wait.timer,
             sbi_object->client_wait.duration);
 
-    ogs_sbi_client_send_request(client, client->cb, request, sbi_object);
+    ogs_sbi_client_send_request(
+            client, sbi_object->client_cb, request, sbi_object);
 }
 
 bool ogs_sbi_discover_and_send(

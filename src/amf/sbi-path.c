@@ -136,6 +136,7 @@ void amf_ue_sbi_discover_and_send(
     amf_ue->sbi.nf_state_registered = amf_nf_state_registered;
     amf_ue->sbi.client_wait.duration =
         amf_timer_cfg(AMF_TIMER_SBI_CLIENT_WAIT)->duration;
+    amf_ue->sbi.client_cb = client_cb;
 
     if (ogs_sbi_discover_and_send(
             nf_type, &amf_ue->sbi, data, (ogs_sbi_build_f)build) != true) {
@@ -155,6 +156,7 @@ void amf_sess_sbi_discover_and_send(
     sess->sbi.nf_state_registered = amf_nf_state_registered;
     sess->sbi.client_wait.duration =
         amf_timer_cfg(AMF_TIMER_SBI_CLIENT_WAIT)->duration;
+    sess->sbi.client_cb = client_cb;
 
     if (ogs_sbi_discover_and_send(
             nf_type, &sess->sbi, data, (ogs_sbi_build_f)build) != true) {

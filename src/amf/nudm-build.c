@@ -59,7 +59,7 @@ ogs_sbi_request_t *amf_nudm_uecm_build_registration(
                         ogs_sbi_server_uri(server, &header);
     ogs_assert(Amf3GppAccessRegistration.dereg_callback_uri);
 
-    Amf3GppAccessRegistration.guami = ogs_sbi_common_build_guami(amf_ue->guami);
+    Amf3GppAccessRegistration.guami = ogs_sbi_build_guami(amf_ue->guami);
     Amf3GppAccessRegistration.rat_type = OpenAPI_rat_type_NR;
 
     message.Amf3GppAccessRegistration = &Amf3GppAccessRegistration;
@@ -68,7 +68,7 @@ ogs_sbi_request_t *amf_nudm_uecm_build_registration(
     ogs_assert(request);
 
     if (Amf3GppAccessRegistration.guami)
-        ogs_sbi_common_free_guami(Amf3GppAccessRegistration.guami);
+        ogs_sbi_free_guami(Amf3GppAccessRegistration.guami);
     ogs_free(Amf3GppAccessRegistration.dereg_callback_uri);
 
     return request;

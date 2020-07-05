@@ -261,7 +261,7 @@ bool udm_nudm_uecm_handle_registration(
             Amf3GppAccessRegistration->dereg_callback_uri);
 
     ogs_amf_id_from_string(&udm_ue->amf_id, guami->amf_id);
-    ogs_sbi_common_parse_plmn_id(&udm_ue->serving_plmn_id, guami->plmn_id);
+    ogs_sbi_parse_plmn_id(&udm_ue->serving_plmn_id, guami->plmn_id);
 
     udm_ue->amf_3gpp_access_registration =
         OpenAPI_amf3_gpp_access_registration_copy(

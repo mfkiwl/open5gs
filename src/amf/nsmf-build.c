@@ -53,7 +53,7 @@ ogs_sbi_request_t *amf_nsmf_pdu_session_build_create_sm_context(
     SmContextCreateData.serving_nf_id = ogs_sbi_self()->nf_instance_id;
 
     SmContextCreateData.serving_network =
-        ogs_sbi_common_build_plmn_id_nid(&amf_ue->tai.plmn_id, NULL);
+        ogs_sbi_build_plmn_id_nid(&amf_ue->tai.plmn_id, NULL);
 
     SmContextCreateData.supi = amf_ue->supi;
     SmContextCreateData.pei = amf_ue->pei;
@@ -79,7 +79,7 @@ ogs_sbi_request_t *amf_nsmf_pdu_session_build_create_sm_context(
         SmContextCreateData.hplmn_snssai = &hplmnSnssai;
     }
 
-    SmContextCreateData.guami = ogs_sbi_common_build_guami(amf_ue->guami);
+    SmContextCreateData.guami = ogs_sbi_build_guami(amf_ue->guami);
     SmContextCreateData.an_type = amf_ue->nas.access_type; 
 
     memset(&header, 0, sizeof(header));
@@ -99,7 +99,7 @@ ogs_sbi_request_t *amf_nsmf_pdu_session_build_create_sm_context(
     SmContextCreateData.n1_sm_msg = &n1SmMsg;
 
     memset(&ueLocation, 0, sizeof(ueLocation));
-    ueLocation.nr_location = ogs_sbi_common_build_nr_location(
+    ueLocation.nr_location = ogs_sbi_build_nr_location(
             &amf_ue->tai, &amf_ue->nr_cgi);
 
     SmContextCreateData.ue_location = &ueLocation;
@@ -122,7 +122,7 @@ ogs_sbi_request_t *amf_nsmf_pdu_session_build_create_sm_context(
     ogs_assert(request);
 
     if (SmContextCreateData.serving_network)
-        ogs_sbi_common_free_plmn_id_nid(SmContextCreateData.serving_network);
+        ogs_sbi_free_plmn_id_nid(SmContextCreateData.serving_network);
     ogs_free(SmContextCreateData.sm_context_status_uri);
     ogs_free(header.resource.component[2]);
     if (sNssai.sd)
@@ -130,11 +130,11 @@ ogs_sbi_request_t *amf_nsmf_pdu_session_build_create_sm_context(
     if (hplmnSnssai.sd)
         ogs_free(hplmnSnssai.sd);
     if (SmContextCreateData.guami)
-        ogs_sbi_common_free_guami(SmContextCreateData.guami);
+        ogs_sbi_free_guami(SmContextCreateData.guami);
     if (SmContextCreateData.gpsi)
         ogs_free(SmContextCreateData.gpsi);
     if (ueLocation.nr_location)
-        ogs_sbi_common_free_nr_location(ueLocation.nr_location);
+        ogs_sbi_free_nr_location(ueLocation.nr_location);
 
     return request;
 }

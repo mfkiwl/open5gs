@@ -204,6 +204,11 @@ typedef struct ogs_nr_cgi_s {
     uint64_t cell_id; /* 36 bit */
 } __attribute__ ((packed)) ogs_nr_cgi_t;
 
+char *ogs_tac_to_string(ogs_uint24_t tac);
+ogs_uint24_t ogs_tac_from_string(const char *hex);
+char *ogs_nr_cell_id_to_string(uint64_t nr_cell_id);
+uint64_t ogs_nr_cell_id_from_string(const char *hex);
+
 /************************************
  * S-NSSAI Structure                */
 #define OGS_MAX_NUM_OF_S_NSSAI      16

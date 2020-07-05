@@ -32,11 +32,15 @@ ogs_sbi_request_t *amf_nsmf_pdu_session_build_create_sm_context(
     amf_ue_t *amf_ue = NULL;
 
     OpenAPI_sm_context_create_data_t SmContextCreateData;
-    OpenAPI_plmn_id_nid_t plmn_id_nid;
-    OpenAPI_snssai_t s_nssai;
-    OpenAPI_snssai_t hplmn_snssai;
+    OpenAPI_plmn_id_nid_t servingNetwork;
+    OpenAPI_snssai_t sNssai;
+    OpenAPI_snssai_t hplmnSnssai;
     OpenAPI_ref_to_binary_data_t n1SmMsg;
     OpenAPI_guami_t guami;
+    OpenAPI_user_location_t ueLocation;
+    OpenAPI_nr_location_t nrLocation;
+    OpenAPI_tai_t tai;
+    OpenAPI_ncgi_t ncgi;
 
     ogs_assert(sess);
     amf_ue = sess->amf_ue;
@@ -54,10 +58,10 @@ ogs_sbi_request_t *amf_nsmf_pdu_session_build_create_sm_context(
 
     SmContextCreateData.serving_nf_id = ogs_sbi_self()->nf_instance_id;
 
-    plmn_id_nid.mcc = ogs_plmn_id_mcc_string(&amf_ue->tai.plmn_id);
-    plmn_id_nid.mnc = ogs_plmn_id_mnc_string(&amf_ue->tai.plmn_id);
-    plmn_id_nid.nid = NULL;
-    SmContextCreateData.serving_network = &plmn_id_nid;
+    servingNetwork.mcc = ogs_plmn_id_mcc_string(&amf_ue->tai.plmn_id);
+    servingNetwork.mnc = ogs_plmn_id_mnc_string(&amf_ue->tai.plmn_id);
+    servingNetwork.nid = NULL;
+    SmContextCreateData.serving_network = &servingNetwork;
 
     SmContextCreateData.supi = amf_ue->supi;
     SmContextCreateData.pei = amf_ue->pei;
@@ -70,22 +74,22 @@ ogs_sbi_request_t *amf_nsmf_pdu_session_build_create_sm_context(
     SmContextCreateData.pdu_session_id = sess->psi;
     SmContextCreateData.dnn = sess->dnn;
 
-    memset(&s_nssai, 0, sizeof(s_nssai));
-    s_nssai.sst = sess->s_nssai.sst;
-    s_nssai.sd = ogs_s_nssai_sd_to_string(sess->s_nssai.sd);
-    SmContextCreateData.s_nssai = &s_nssai;
+    memset(&sNssai, 0, sizeof(sNssai));
+    sNssai.sst = sess->s_nssai.sst;
+    sNssai.sd = ogs_s_nssai_sd_to_string(sess->s_nssai.sd);
+    SmContextCreateData.s_nssai = &sNssai;
 
-    memset(&hplmn_snssai, 0, sizeof(hplmn_snssai));
+    memset(&hplmnSnssai, 0, sizeof(hplmnSnssai));
     if (sess->s_nssai.mapped_hplmn_sst) {
-        hplmn_snssai.sst = sess->s_nssai.mapped_hplmn_sst;
-        hplmn_snssai.sd = ogs_s_nssai_sd_to_string(
+        hplmnSnssai.sst = sess->s_nssai.mapped_hplmn_sst;
+        hplmnSnssai.sd = ogs_s_nssai_sd_to_string(
                 sess->s_nssai.mapped_hplmn_sd);
-        SmContextCreateData.hplmn_snssai = &hplmn_snssai;
+        SmContextCreateData.hplmn_snssai = &hplmnSnssai;
     }
 
     ogs_assert(amf_ue->guami);
     guami.amf_id = ogs_amf_id_to_string(&amf_ue->guami->amf_id, buf);
-    guami.plmn_id = (OpenAPI_plmn_id_t *)&plmn_id_nid;
+    guami.plmn_id = (OpenAPI_plmn_id_t *)&servingNetwork;
     SmContextCreateData.guami = &guami;
 
     SmContextCreateData.an_type = amf_ue->nas.access_type; 
@@ -106,6 +110,22 @@ ogs_sbi_request_t *amf_nsmf_pdu_session_build_create_sm_context(
     n1SmMsg.content_id = (char *)OGS_SBI_CONTENT_5GNAS_SM_ID;
     SmContextCreateData.n1_sm_msg = &n1SmMsg;
 
+    memset(&tai, 0, sizeof(tai));
+    tai.plmn_id = (OpenAPI_plmn_id_t *)&servingNetwork;
+    tai.tac = ogs_tac_to_string(amf_ue->tai.tac);
+    memset(&ncgi, 0, sizeof(ncgi));
+    ncgi.plmn_id = (OpenAPI_plmn_id_t *)&servingNetwork;
+    ncgi.nr_cell_id = ogs_nr_cell_id_to_string(amf_ue->nr_cgi.cell_id);
+
+    memset(&nrLocation, 0, sizeof(nrLocation));
+    nrLocation.tai = &tai;
+    nrLocation.ncgi = &ncgi;
+
+    memset(&ueLocation, 0, sizeof(ueLocation));
+    ueLocation.nr_location = &nrLocation;
+
+    SmContextCreateData.ue_location = &ueLocation;
+
     message.SmContextCreateData = &SmContextCreateData;
 
     message.part[message.num_of_part].pkbuf = sess->payload_container;
@@ -123,14 +143,18 @@ ogs_sbi_request_t *amf_nsmf_pdu_session_build_create_sm_context(
     request = ogs_sbi_build_request(&message);
     ogs_assert(request);
 
-    ogs_free(plmn_id_nid.mcc);
-    ogs_free(plmn_id_nid.mnc);
+    ogs_free(servingNetwork.mcc);
+    ogs_free(servingNetwork.mnc);
     ogs_free(SmContextCreateData.sm_context_status_uri);
     ogs_free(header.resource.component[2]);
-    if (s_nssai.sd)
-        ogs_free(s_nssai.sd);
-    if (hplmn_snssai.sd)
-        ogs_free(hplmn_snssai.sd);
+    if (sNssai.sd)
+        ogs_free(sNssai.sd);
+    if (hplmnSnssai.sd)
+        ogs_free(hplmnSnssai.sd);
+    if (tai.tac)
+        ogs_free(tai.tac);
+    if (ncgi.nr_cell_id)
+        ogs_free(ncgi.nr_cell_id);
     if (SmContextCreateData.gpsi)
         ogs_free(SmContextCreateData.gpsi);
 

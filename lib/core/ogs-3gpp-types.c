@@ -167,29 +167,6 @@ ogs_amf_id_t *ogs_amf_id_build(ogs_amf_id_t *amf_id,
     return amf_id;
 }
 
-char *ogs_s_nssai_sd_to_string(ogs_uint24_t sd)
-{
-    if (sd.v != OGS_S_NSSAI_NO_SD_VALUE)
-        return ogs_msprintf("%06x", sd.v);
-    else
-        return NULL;
-}
-
-ogs_uint24_t ogs_s_nssai_sd_from_string(const char *hex)
-{
-    ogs_uint24_t sd;
-    char hexbuf[sizeof(ogs_uint24_t)];
-
-    sd.v = OGS_S_NSSAI_NO_SD_VALUE;
-    if (hex == NULL)
-        return sd;
-
-    OGS_HEX(hex, strlen(hex), hexbuf);
-    memcpy(&sd, hexbuf, 3);
-
-    return ogs_be24toh(sd);
-}
-
 char *ogs_supi_from_suci(char *suci)
 {
 #define MAX_SUCI_TOKEN 16
@@ -267,6 +244,69 @@ char *ogs_id_get_value(char *str)
 
     ogs_free(tmp);
     return ueid;
+}
+
+char *ogs_tac_to_string(ogs_uint24_t tac)
+{
+    return ogs_msprintf("%06x", tac.v);
+}
+
+ogs_uint24_t ogs_tac_from_string(const char *hex)
+{
+    ogs_uint24_t tac;
+    char hexbuf[sizeof(ogs_uint24_t)];
+
+    tac.v = 0;
+    if (hex == NULL)
+        return tac;
+
+    OGS_HEX(hex, strlen(hex), hexbuf);
+    memcpy(&tac, hexbuf, 3);
+
+    return ogs_be24toh(tac);
+}
+
+char *ogs_nr_cell_id_to_string(uint64_t nr_cell_id)
+{
+    return ogs_msprintf("%09llx", (long long)nr_cell_id);
+}
+
+uint64_t ogs_nr_cell_id_from_string(const char *hex)
+{
+    uint64_t nr_cell_id;
+    char hexbuf[5];
+
+    nr_cell_id = 0;
+    if (hex == NULL)
+        return nr_cell_id;
+
+    OGS_HEX(hex, strlen(hex), hexbuf);
+    memcpy(&nr_cell_id, hexbuf, 5);
+
+    return nr_cell_id;
+}
+
+char *ogs_s_nssai_sd_to_string(ogs_uint24_t sd)
+{
+    if (sd.v != OGS_S_NSSAI_NO_SD_VALUE)
+        return ogs_msprintf("%06x", sd.v);
+    else
+        return NULL;
+}
+
+ogs_uint24_t ogs_s_nssai_sd_from_string(const char *hex)
+{
+    ogs_uint24_t sd;
+    char hexbuf[sizeof(ogs_uint24_t)];
+
+    sd.v = OGS_S_NSSAI_NO_SD_VALUE;
+    if (hex == NULL)
+        return sd;
+
+    OGS_HEX(hex, strlen(hex), hexbuf);
+    memcpy(&sd, hexbuf, 3);
+
+    return ogs_be24toh(sd);
 }
 
 int ogs_fqdn_build(char *dst, char *src, int length)

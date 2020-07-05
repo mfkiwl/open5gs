@@ -296,7 +296,6 @@ void ogs_sbi_parse_plmn_id_nid(
         ogs_plmn_id_t *plmn_id, uint8_t *nid, OpenAPI_plmn_id_nid_t *PlmnIdNid)
 {
     ogs_assert(plmn_id);
-    ogs_assert(nid);
     ogs_assert(PlmnIdNid);
     ogs_assert(PlmnIdNid->mcc);
     ogs_assert(PlmnIdNid->mnc);

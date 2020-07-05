@@ -103,7 +103,7 @@ void ogs_sbi_send(
     ogs_timer_start(sbi_object->client_wait.timer,
             sbi_object->client_wait.duration);
 
-    ogs_sbi_client_send_request(client, request, sbi_object);
+    ogs_sbi_client_send_request(client, client->cb, request, sbi_object);
 }
 
 bool ogs_sbi_discover_and_send(
@@ -146,7 +146,7 @@ void ogs_nnrf_nfm_send_nf_register(ogs_sbi_nf_instance_t *nf_instance)
 
     request = ogs_nnrf_nfm_build_register(nf_instance);
     ogs_assert(request);
-    ogs_sbi_client_send_request(client, request, nf_instance);
+    ogs_sbi_client_send_request(client, client->cb, request, nf_instance);
     ogs_sbi_request_free(request);
 }
 
@@ -161,7 +161,7 @@ void ogs_nnrf_nfm_send_nf_update(ogs_sbi_nf_instance_t *nf_instance)
 
     request = ogs_nnrf_nfm_build_update(nf_instance);
     ogs_assert(request);
-    ogs_sbi_client_send_request(client, request, nf_instance);
+    ogs_sbi_client_send_request(client, client->cb, request, nf_instance);
     ogs_sbi_request_free(request);
 }
 
@@ -176,7 +176,7 @@ void ogs_nnrf_nfm_send_nf_de_register(ogs_sbi_nf_instance_t *nf_instance)
 
     request = ogs_nnrf_nfm_build_de_register(nf_instance);
     ogs_assert(request);
-    ogs_sbi_client_send_request(client, request, nf_instance);
+    ogs_sbi_client_send_request(client, client->cb, request, nf_instance);
     ogs_sbi_request_free(request);
 }
 
@@ -198,7 +198,7 @@ void ogs_nnrf_nfm_send_nf_status_subscribe(ogs_sbi_client_t *client,
 
     request = ogs_nnrf_nfm_build_status_subscribe(subscription);
     ogs_assert(request);
-    ogs_sbi_client_send_request(client, request, subscription);
+    ogs_sbi_client_send_request(client, client->cb, request, subscription);
     ogs_sbi_request_free(request);
 }
 
@@ -214,7 +214,7 @@ void ogs_nnrf_nfm_send_nf_status_unsubscribe(
 
     request = ogs_nnrf_nfm_build_status_unsubscribe(subscription);
     ogs_assert(request);
-    ogs_sbi_client_send_request(client, request, subscription);
+    ogs_sbi_client_send_request(client, client->cb, request, subscription);
     ogs_sbi_request_free(request);
 }
 
@@ -232,6 +232,6 @@ void ogs_nnrf_disc_send_nf_discover(ogs_sbi_nf_instance_t *nf_instance,
     request = ogs_nnrf_disc_build_discover(
             target_nf_type, nf_instance->nf_type);
     ogs_assert(request);
-    ogs_sbi_client_send_request(client, request, data);
+    ogs_sbi_client_send_request(client, client->cb, request, data);
     ogs_sbi_request_free(request);
 }

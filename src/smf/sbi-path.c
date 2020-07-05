@@ -370,7 +370,6 @@ void smf_sbi_send_sm_context_update_error(
         ogs_pkbuf_free(n2smbuf);
 }
 
-#if 0
 static int client_notify_cb(ogs_sbi_response_t *response, void *data)
 {
     int rv;
@@ -395,7 +394,6 @@ static int client_notify_cb(ogs_sbi_response_t *response, void *data)
     ogs_sbi_response_free(response);
     return OGS_OK;
 }
-#endif
 
 void smf_sbi_send_sm_context_status_notify(smf_sess_t *sess)
 {
@@ -409,6 +407,6 @@ void smf_sbi_send_sm_context_status_notify(smf_sess_t *sess)
 
     request = smf_namf_callback_build_sm_context_status(sess, NULL);
     ogs_assert(request);
-    ogs_sbi_client_send_request(client, request, NULL);
+    ogs_sbi_client_send_request(client, client_notify_cb, request, NULL);
     ogs_sbi_request_free(request);
 }

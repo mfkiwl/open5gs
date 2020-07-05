@@ -52,6 +52,7 @@ typedef struct connection_s {
     char error[CURL_ERROR_SIZE];
 
     ogs_sbi_client_t *client;
+    ogs_sbi_client_cb_f client_cb;
 } connection_t;
 
 static OGS_POOL(client_pool, ogs_sbi_client_t);
@@ -227,7 +228,8 @@ static char *add_params_to_uri(CURL *easy, char *uri, ogs_hash_t *params)
     return uri;
 }
 
-static connection_t *connection_add(ogs_sbi_client_t *client,
+static connection_t *connection_add(
+        ogs_sbi_client_t *client, ogs_sbi_client_cb_f client_cb,
         ogs_sbi_request_t *request, void *data)
 {
     ogs_hash_index_t *hi;
@@ -236,13 +238,18 @@ static connection_t *connection_add(ogs_sbi_client_t *client,
     CURLMcode rc;
 
     ogs_assert(client);
+    ogs_assert(client_cb);
     ogs_assert(request);
+    ogs_assert(request->h.method);
 
     ogs_pool_alloc(&connection_pool, &conn);
     ogs_assert(conn);
     memset(conn, 0, sizeof(connection_t));
 
-    ogs_assert(request->h.method);
+    conn->client = client;
+    conn->client_cb = client_cb;
+    conn->data = data;
+
     conn->method = ogs_strdup(request->h.method);
 
     conn->num_of_header = ogs_hash_count(request->http.headers);
@@ -264,6 +271,8 @@ static connection_t *connection_add(ogs_sbi_client_t *client,
     conn->timer = ogs_timer_add(
             ogs_sbi_self()->timer_mgr, connection_timer_expired, conn);
     ogs_assert(conn->timer);
+
+    ogs_list_add(&client->connection_list, conn);
 
     /* If http response is not received within 1 second,
      * we will discard this request. */
@@ -313,11 +322,6 @@ static connection_t *connection_add(ogs_sbi_client_t *client,
     ogs_assert(client->multi);
     rc = curl_multi_add_handle(client->multi, conn->easy);
     mcode_or_die("connection_add: curl_multi_add_handle", rc);
-
-    conn->client = client;
-    conn->data = data;
-
-    ogs_list_add(&client->connection_list, conn);
 
     return conn;
 }
@@ -435,13 +439,8 @@ static void check_multi_info(ogs_sbi_client_t *client)
                     ogs_sbi_header_set(response->http.headers,
                             OGS_SBI_LOCATION, conn->location);
 
-                if (client->cb) 
-                    client->cb(response, conn->data);
-                else {
-                    ogs_fatal("client callback is not registered");
-                    ogs_sbi_response_free(response);
-                    ogs_assert_if_reached();
-                }
+                ogs_assert(conn->client_cb);
+                conn->client_cb(response, conn->data);
             } else
                 ogs_warn("[%d] %s", res, conn->error);
 
@@ -455,7 +454,8 @@ static void check_multi_info(ogs_sbi_client_t *client)
 }
 
 void ogs_sbi_client_send_request(
-        ogs_sbi_client_t *client, ogs_sbi_request_t *request, void *data)
+        ogs_sbi_client_t *client, ogs_sbi_client_cb_f client_cb,
+        ogs_sbi_request_t *request, void *data)
 {
     connection_t *conn = NULL;
 
@@ -466,7 +466,7 @@ void ogs_sbi_client_send_request(
         request->h.uri = ogs_sbi_client_uri(client, &request->h);
     }
 
-    conn = connection_add(client, request, data);
+    conn = connection_add(client, client_cb, request, data);
     ogs_assert(conn);
 }
 

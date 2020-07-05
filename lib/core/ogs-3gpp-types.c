@@ -248,25 +248,21 @@ char *ogs_id_get_value(char *str)
 
 char *ogs_s_nssai_sd_to_string(ogs_uint24_t sd)
 {
-    if (sd.v != OGS_S_NSSAI_NO_SD_VALUE)
-        return ogs_msprintf("%06x", sd.v);
-    else
+    if (sd.v == OGS_S_NSSAI_NO_SD_VALUE)
         return NULL;
+
+    return ogs_uint24_to_string(sd);
 }
 
 ogs_uint24_t ogs_s_nssai_sd_from_string(const char *hex)
 {
     ogs_uint24_t sd;
-    char hexbuf[sizeof(ogs_uint24_t)];
 
     sd.v = OGS_S_NSSAI_NO_SD_VALUE;
     if (hex == NULL)
         return sd;
 
-    OGS_HEX(hex, strlen(hex), hexbuf);
-    memcpy(&sd, hexbuf, 3);
-
-    return ogs_be24toh(sd);
+    return ogs_uint24_from_string((char *)hex);
 }
 
 int ogs_fqdn_build(char *dst, char *src, int length)

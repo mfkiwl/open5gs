@@ -36,6 +36,19 @@ OpenAPI_plmn_id_t *ogs_sbi_common_build_plmn_id(ogs_plmn_id_t *plmn_id)
     return PlmnId;
 }
 
+ogs_plmn_id_t *ogs_sbi_common_parse_plmn_id(
+        ogs_plmn_id_t *plmn_id, OpenAPI_plmn_id_t *PlmnId)
+{
+    ogs_assert(plmn_id);
+    ogs_assert(PlmnId);
+    ogs_assert(PlmnId->mcc);
+    ogs_assert(PlmnId->mnc);
+
+    ogs_plmn_id_build(plmn_id,
+            atoi(PlmnId->mcc), atoi(PlmnId->mnc), strlen(PlmnId->mnc));
+    return plmn_id;
+}
+
 void ogs_sbi_common_free_plmn_id(OpenAPI_plmn_id_t *PlmnId)
 {
     ogs_assert(PlmnId);

@@ -197,7 +197,6 @@ bool udm_nudm_uecm_handle_registration(
 
     OpenAPI_amf3_gpp_access_registration_t *Amf3GppAccessRegistration = NULL;
     OpenAPI_guami_t *guami = NULL;
-    OpenAPI_plmn_id_t *serving_plmn_id = NULL;
 
     ogs_assert(udm_ue);
     session = udm_ue->sbi.session;
@@ -235,22 +234,21 @@ bool udm_nudm_uecm_handle_registration(
         return false;
     }
 
-    serving_plmn_id = guami->plmn_id;
-    if (!serving_plmn_id) {
+    if (!guami->plmn_id) {
         ogs_error("[%s] No PlmnId", udm_ue->supi);
         ogs_sbi_server_send_error(session, OGS_SBI_HTTP_STATUS_BAD_REQUEST,
                 message, "No PlmnId", udm_ue->supi);
         return false;
     }
 
-    if (!serving_plmn_id->mnc) {
+    if (!guami->plmn_id->mnc) {
         ogs_error("[%s] No PlmnId.Mnc", udm_ue->supi);
         ogs_sbi_server_send_error(session, OGS_SBI_HTTP_STATUS_BAD_REQUEST,
                 message, "No PlmnId.Mnc", udm_ue->supi);
         return false;
     }
 
-    if (!serving_plmn_id->mcc) {
+    if (!guami->plmn_id->mcc) {
         ogs_error("[%s] No PlmnId.Mcc", udm_ue->supi);
         ogs_sbi_server_send_error(session, OGS_SBI_HTTP_STATUS_BAD_REQUEST,
                 message, "No PlmnId.Mcc", udm_ue->supi);
@@ -263,9 +261,7 @@ bool udm_nudm_uecm_handle_registration(
             Amf3GppAccessRegistration->dereg_callback_uri);
 
     ogs_amf_id_from_string(&udm_ue->amf_id, guami->amf_id);
-    ogs_plmn_id_build(&udm_ue->serving_plmn_id, 
-        atoi(serving_plmn_id->mcc), atoi(serving_plmn_id->mnc),
-        strlen(serving_plmn_id->mnc));
+    ogs_sbi_common_parse_plmn_id(&udm_ue->serving_plmn_id, guami->plmn_id);
 
     udm_ue->amf_3gpp_access_registration =
         OpenAPI_amf3_gpp_access_registration_copy(

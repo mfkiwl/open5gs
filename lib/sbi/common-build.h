@@ -25,6 +25,8 @@ extern "C" {
 #endif
 
 OpenAPI_plmn_id_t *ogs_sbi_common_build_plmn_id(ogs_plmn_id_t *plmn_id);
+ogs_plmn_id_t *ogs_sbi_common_parse_plmn_id(
+        ogs_plmn_id_t *plmn_id, OpenAPI_plmn_id_t *PlmnId);
 void ogs_sbi_common_free_plmn_id(OpenAPI_plmn_id_t *PlmnId);
 
 OpenAPI_plmn_id_nid_t *ogs_sbi_common_build_plmn_id_nid(

@@ -130,7 +130,7 @@ ogs_amf_id_t *ogs_amf_id_from_string(ogs_amf_id_t *amf_id, const char *hex)
     return amf_id;
 }
 
-char *ogs_amf_id_to_string2(ogs_amf_id_t *amf_id)
+char *ogs_amf_id_to_string(ogs_amf_id_t *amf_id)
 {
     char *str = NULL;
     ogs_assert(amf_id);
@@ -141,16 +141,6 @@ char *ogs_amf_id_to_string2(ogs_amf_id_t *amf_id)
     ogs_hex_to_ascii(amf_id, sizeof(ogs_amf_id_t), str, OGS_AMFIDSTRLEN);
 
     return str;
-}
-
-char *ogs_amf_id_to_string(ogs_amf_id_t *amf_id, char *buf)
-{
-    ogs_assert(amf_id);
-    ogs_assert(buf);
-
-    ogs_hex_to_ascii(amf_id, sizeof(ogs_amf_id_t), buf, OGS_AMFIDSTRLEN);
-
-    return buf;
 }
 
 uint8_t ogs_amf_region_id(ogs_amf_id_t *amf_id)

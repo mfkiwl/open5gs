@@ -93,7 +93,7 @@ OpenAPI_guami_t *ogs_sbi_common_build_guami(ogs_guami_t *guami)
 
     Guami->plmn_id = ogs_sbi_common_build_plmn_id(&guami->plmn_id);
     ogs_assert(Guami->plmn_id);
-    Guami->amf_id = ogs_amf_id_to_string2(&guami->amf_id);
+    Guami->amf_id = ogs_amf_id_to_string(&guami->amf_id);
     ogs_assert(Guami->amf_id);
 
     return Guami;

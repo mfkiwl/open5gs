@@ -80,46 +80,6 @@ extern "C" {
 #define OGS_ACCESS_TYPE_NON_3GPP 2
 #define OGS_ACCESS_TYPE_BOTH_3GPP_AND_NON_3GPP 3
 
-typedef struct ogs_uint24_s {
-    uint32_t v:24;
-}  __attribute__ ((packed)) ogs_uint24_t;
-
-static ogs_inline ogs_uint24_t ogs_be24toh(ogs_uint24_t x)
-{
-    uint32_t tmp = x.v;
-    tmp = be32toh(tmp);
-    x.v = tmp >> 8;
-    return x;
-}
-
-static ogs_inline ogs_uint24_t ogs_htobe24(ogs_uint24_t x)
-{
-    uint32_t tmp = x.v;
-    tmp = htobe32(tmp);
-    x.v = tmp >> 8;
-    return x;
-}
-
-static ogs_inline ogs_uint24_t ogs_uint24_from_string(char *str)
-{
-    ogs_uint24_t x;
-
-    ogs_assert(str);
-    OGS_HEX(str, strlen(str), &x);
-    return ogs_be24toh(x);
-}
-
-#define OGS_24BITSTRLEN    (sizeof(ogs_uint24_t)*2+1)
-static ogs_inline char *ogs_uint24_to_string(ogs_uint24_t x, char *str)
-{
-    ogs_assert(str);
-
-    x = ogs_htobe24(x);
-    ogs_hex_to_ascii(&x, sizeof(x), str, OGS_24BITSTRLEN);
-
-    return str;
-}
-
 /************************************
  * PLMN_ID Structure                */
 #define OGS_MAX_NUM_OF_PLMN         6

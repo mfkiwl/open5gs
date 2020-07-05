@@ -155,3 +155,23 @@ char ogs_from_hex(char ch)
 {
     return isdigit(ch) ? ch - '0' : tolower(ch) - 'a' + 10;
 }
+
+ogs_uint24_t ogs_uint24_from_string(char *str)
+{
+    ogs_uint24_t x;
+
+    ogs_assert(str);
+    OGS_HEX(str, strlen(str), &x);
+    return ogs_be24toh(x);
+}
+
+#define OGS_24BITSTRLEN    (sizeof(ogs_uint24_t)*2+1)
+char *ogs_uint24_to_string(ogs_uint24_t x, char *str)
+{
+    ogs_assert(str);
+
+    x = ogs_htobe24(x);
+    ogs_hex_to_ascii(&x, sizeof(x), str, OGS_24BITSTRLEN);
+
+    return str;
+}

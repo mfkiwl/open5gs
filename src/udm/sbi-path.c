@@ -103,8 +103,8 @@ int udm_sbi_open(void)
         ogs_sbi_nf_service_add_version(service, (char*)OGS_SBI_API_V2,
                 (char*)OGS_SBI_API_V2_0_0, NULL);
 
-        udm_nf_fsm_init(nf_instance);
         udm_sbi_setup_client_callback(nf_instance);
+        udm_nf_fsm_init(nf_instance);
     }
 
     return OGS_OK;

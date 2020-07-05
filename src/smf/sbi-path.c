@@ -95,8 +95,8 @@ int smf_sbi_open(void)
         ogs_sbi_nf_service_add_version(service, (char*)OGS_SBI_API_V1,
                 (char*)OGS_SBI_API_V1_0_0, NULL);
 
-        smf_nf_fsm_init(nf_instance);
         smf_sbi_setup_client_callback(nf_instance);
+        smf_nf_fsm_init(nf_instance);
     }
 
     return OGS_OK;

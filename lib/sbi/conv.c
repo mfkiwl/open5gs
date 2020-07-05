@@ -248,7 +248,7 @@ OpenAPI_plmn_id_t *ogs_sbi_build_plmn_id(ogs_plmn_id_t *plmn_id)
     return PlmnId;
 }
 
-ogs_plmn_id_t *ogs_sbi_parse_plmn_id(
+void ogs_sbi_parse_plmn_id(
         ogs_plmn_id_t *plmn_id, OpenAPI_plmn_id_t *PlmnId)
 {
     ogs_assert(plmn_id);
@@ -258,7 +258,6 @@ ogs_plmn_id_t *ogs_sbi_parse_plmn_id(
 
     ogs_plmn_id_build(plmn_id,
             atoi(PlmnId->mcc), atoi(PlmnId->mnc), strlen(PlmnId->mnc));
-    return plmn_id;
 }
 
 void ogs_sbi_free_plmn_id(OpenAPI_plmn_id_t *PlmnId)
@@ -293,6 +292,20 @@ OpenAPI_plmn_id_nid_t *ogs_sbi_build_plmn_id_nid(
     return PlmnIdNid;
 }
 
+void ogs_sbi_parse_plmn_id_nid(
+        ogs_plmn_id_t *plmn_id, uint8_t *nid, OpenAPI_plmn_id_nid_t *PlmnIdNid)
+{
+    ogs_assert(plmn_id);
+    ogs_assert(nid);
+    ogs_assert(PlmnIdNid);
+    ogs_assert(PlmnIdNid->mcc);
+    ogs_assert(PlmnIdNid->mnc);
+
+    ogs_plmn_id_build(plmn_id,
+            atoi(PlmnIdNid->mcc), atoi(PlmnIdNid->mnc), strlen(PlmnIdNid->mnc));
+
+    /* TODO : Network Identifier */
+}
 void ogs_sbi_free_plmn_id_nid(OpenAPI_plmn_id_nid_t *PlmnIdNid)
 {
     ogs_assert(PlmnIdNid);

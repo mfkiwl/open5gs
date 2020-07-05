@@ -47,12 +47,14 @@ char *ogs_sbi_bitrate_to_string(uint64_t bitrate, int unit);
 uint64_t ogs_sbi_bitrate_from_string(char *str);
 
 OpenAPI_plmn_id_t *ogs_sbi_build_plmn_id(ogs_plmn_id_t *plmn_id);
-ogs_plmn_id_t *ogs_sbi_parse_plmn_id(
+void ogs_sbi_parse_plmn_id(
         ogs_plmn_id_t *plmn_id, OpenAPI_plmn_id_t *PlmnId);
 void ogs_sbi_free_plmn_id(OpenAPI_plmn_id_t *PlmnId);
 
 OpenAPI_plmn_id_nid_t *ogs_sbi_build_plmn_id_nid(
         ogs_plmn_id_t *plmn_id, uint8_t *nid);
+void ogs_sbi_parse_plmn_id_nid(
+        ogs_plmn_id_t *plmn_id, uint8_t *nid, OpenAPI_plmn_id_nid_t *PlmnIdNid);
 void ogs_sbi_free_plmn_id_nid(OpenAPI_plmn_id_nid_t *PlmnIdNid);
 
 OpenAPI_guami_t *ogs_sbi_build_guami(ogs_guami_t *guami);

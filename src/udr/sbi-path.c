@@ -84,6 +84,7 @@ int udr_sbi_open(void)
      */
     ogs_list_for_each(&ogs_sbi_self()->nf_instance_list, nf_instance) {
         ogs_sbi_nf_service_t *service = NULL;
+        ogs_sbi_client_t *client = NULL;
 
         ogs_sbi_nf_instance_build_default(nf_instance, udr_self()->nf_type);
 
@@ -93,7 +94,10 @@ int udr_sbi_open(void)
         ogs_sbi_nf_service_add_version(service, (char*)OGS_SBI_API_V1,
                 (char*)OGS_SBI_API_V1_0_0, NULL);
 
-        udr_sbi_setup_client_callback(nf_instance);
+        client = nf_instance->client;
+        ogs_assert(client);
+        client->cb = client_cb;
+
         udr_nf_fsm_init(nf_instance);
     }
 
@@ -103,22 +107,4 @@ int udr_sbi_open(void)
 void udr_sbi_close(void)
 {
     ogs_sbi_server_stop_all();
-}
-
-void udr_sbi_setup_client_callback(ogs_sbi_nf_instance_t *nf_instance)
-{
-    ogs_sbi_client_t *client = NULL;
-    ogs_sbi_nf_service_t *nf_service = NULL;
-    ogs_assert(nf_instance);
-
-    client = nf_instance->client;
-    ogs_assert(client);
-
-    client->cb = client_cb;
-
-    ogs_list_for_each(&nf_instance->nf_service_list, nf_service) {
-        client = nf_service->client;
-        if (client)
-            client->cb = client_cb;
-    }
 }

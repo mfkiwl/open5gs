@@ -19,7 +19,7 @@
 
 #include "ogs-sbi.h"
 
-OpenAPI_plmn_id_t *ogs_common_build_plmn_id(ogs_plmn_id_t *plmn_id)
+OpenAPI_plmn_id_t *ogs_sbi_common_build_plmn_id(ogs_plmn_id_t *plmn_id)
 {
     OpenAPI_plmn_id_t *PlmnId = NULL;
 
@@ -36,7 +36,7 @@ OpenAPI_plmn_id_t *ogs_common_build_plmn_id(ogs_plmn_id_t *plmn_id)
     return PlmnId;
 }
 
-void ogs_common_free_plmn_id(OpenAPI_plmn_id_t *PlmnId)
+void ogs_sbi_common_free_plmn_id(OpenAPI_plmn_id_t *PlmnId)
 {
     ogs_assert(PlmnId);
 
@@ -48,7 +48,7 @@ void ogs_common_free_plmn_id(OpenAPI_plmn_id_t *PlmnId)
     ogs_free(PlmnId);
 }
 
-OpenAPI_plmn_id_nid_t *ogs_common_build_plmn_id_nid(
+OpenAPI_plmn_id_nid_t *ogs_sbi_common_build_plmn_id_nid(
         ogs_plmn_id_t *plmn_id, uint8_t *nid)
 {
     OpenAPI_plmn_id_nid_t *PlmnIdNid = NULL;
@@ -68,7 +68,7 @@ OpenAPI_plmn_id_nid_t *ogs_common_build_plmn_id_nid(
     return PlmnIdNid;
 }
 
-void ogs_common_free_plmn_id_nid(OpenAPI_plmn_id_nid_t *PlmnIdNid)
+void ogs_sbi_common_free_plmn_id_nid(OpenAPI_plmn_id_nid_t *PlmnIdNid)
 {
     ogs_assert(PlmnIdNid);
 
@@ -82,7 +82,7 @@ void ogs_common_free_plmn_id_nid(OpenAPI_plmn_id_nid_t *PlmnIdNid)
     ogs_free(PlmnIdNid);
 }
 
-OpenAPI_nr_location_t *ogs_common_build_nr_location(
+OpenAPI_nr_location_t *ogs_sbi_common_build_nr_location(
     ogs_5gs_tai_t *tai, ogs_nr_cgi_t *nr_cgi)
 {
     OpenAPI_nr_location_t *NrLocation = NULL;
@@ -94,12 +94,12 @@ OpenAPI_nr_location_t *ogs_common_build_nr_location(
 
     Tai = ogs_calloc(1, sizeof(*Tai));
     ogs_assert(Tai);
-    Tai->plmn_id = ogs_common_build_plmn_id(&tai->plmn_id);
+    Tai->plmn_id = ogs_sbi_common_build_plmn_id(&tai->plmn_id);
     Tai->tac = ogs_uint24_to_string(tai->tac);
 
     Ncgi = ogs_calloc(1, sizeof(*Ncgi));
     ogs_assert(Ncgi);
-    Ncgi->plmn_id = ogs_common_build_plmn_id(&nr_cgi->plmn_id);
+    Ncgi->plmn_id = ogs_sbi_common_build_plmn_id(&nr_cgi->plmn_id);
     Ncgi->nr_cell_id = ogs_uint36_to_string(nr_cgi->cell_id);
 
     NrLocation = ogs_calloc(1, sizeof(*NrLocation));
@@ -110,7 +110,7 @@ OpenAPI_nr_location_t *ogs_common_build_nr_location(
     return NrLocation;
 }
 
-void ogs_common_free_nr_location(OpenAPI_nr_location_t *NrLocation)
+void ogs_sbi_common_free_nr_location(OpenAPI_nr_location_t *NrLocation)
 {
     OpenAPI_tai_t *Tai = NULL;
     OpenAPI_ncgi_t *Ncgi = NULL;
@@ -120,7 +120,7 @@ void ogs_common_free_nr_location(OpenAPI_nr_location_t *NrLocation)
     Tai = NrLocation->tai;
     if (Tai) {
         if (Tai->plmn_id)
-            ogs_common_free_plmn_id(Tai->plmn_id);
+            ogs_sbi_common_free_plmn_id(Tai->plmn_id);
         if (Tai->tac)
             ogs_free(Tai->tac);
         ogs_free(Tai);
@@ -129,7 +129,7 @@ void ogs_common_free_nr_location(OpenAPI_nr_location_t *NrLocation)
     Ncgi = NrLocation->ncgi;
     if (Ncgi) {
         if (Ncgi->plmn_id)
-            ogs_common_free_plmn_id(Ncgi->plmn_id);
+            ogs_sbi_common_free_plmn_id(Ncgi->plmn_id);
         if (Ncgi->nr_cell_id)
             ogs_free(Ncgi->nr_cell_id);
         ogs_free(Ncgi);

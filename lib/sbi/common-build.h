@@ -24,16 +24,16 @@
 extern "C" {
 #endif
 
-OpenAPI_plmn_id_t *ogs_common_build_plmn_id(ogs_plmn_id_t *plmn_id);
-void ogs_common_free_plmn_id(OpenAPI_plmn_id_t *PlmnId);
+OpenAPI_plmn_id_t *ogs_sbi_common_build_plmn_id(ogs_plmn_id_t *plmn_id);
+void ogs_sbi_common_free_plmn_id(OpenAPI_plmn_id_t *PlmnId);
 
-OpenAPI_plmn_id_nid_t *ogs_common_build_plmn_id_nid(
+OpenAPI_plmn_id_nid_t *ogs_sbi_common_build_plmn_id_nid(
         ogs_plmn_id_t *plmn_id, uint8_t *nid);
-void ogs_common_free_plmn_id_nid(OpenAPI_plmn_id_nid_t *PlmnIdNid);
+void ogs_sbi_common_free_plmn_id_nid(OpenAPI_plmn_id_nid_t *PlmnIdNid);
 
-OpenAPI_nr_location_t *ogs_common_build_nr_location(
+OpenAPI_nr_location_t *ogs_sbi_common_build_nr_location(
     ogs_5gs_tai_t *tai, ogs_nr_cgi_t *nr_cgi);
-void ogs_common_free_nr_location(OpenAPI_nr_location_t *NrLocation);
+void ogs_sbi_common_free_nr_location(OpenAPI_nr_location_t *NrLocation);
 
 #ifdef __cplusplus
 }

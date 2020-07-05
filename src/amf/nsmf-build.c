@@ -112,10 +112,10 @@ ogs_sbi_request_t *amf_nsmf_pdu_session_build_create_sm_context(
 
     memset(&tai, 0, sizeof(tai));
     tai.plmn_id = (OpenAPI_plmn_id_t *)&servingNetwork;
-    tai.tac = ogs_tac_to_string(amf_ue->tai.tac);
+    tai.tac = ogs_uint24_to_string(amf_ue->tai.tac);
     memset(&ncgi, 0, sizeof(ncgi));
     ncgi.plmn_id = (OpenAPI_plmn_id_t *)&servingNetwork;
-    ncgi.nr_cell_id = ogs_nr_cell_id_to_string(amf_ue->nr_cgi.cell_id);
+    ncgi.nr_cell_id = ogs_uint36_to_string(amf_ue->nr_cgi.cell_id);
 
     memset(&nrLocation, 0, sizeof(nrLocation));
     nrLocation.tai = &tai;

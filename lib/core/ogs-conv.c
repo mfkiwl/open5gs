@@ -156,22 +156,64 @@ char ogs_from_hex(char ch)
     return isdigit(ch) ? ch - '0' : tolower(ch) - 'a' + 10;
 }
 
+char *ogs_uint24_to_string(ogs_uint24_t x)
+{
+    return ogs_msprintf("%06x", x.v);
+}
+
+char *ogs_uint28_to_string(uint32_t x)
+{
+    return ogs_msprintf("%07x", x);
+}
+
+char *ogs_uint32_to_string(uint32_t x)
+{
+    return ogs_msprintf("%08x", x);
+}
+
+char *ogs_uint36_to_string(uint64_t x)
+{
+    return ogs_msprintf("%09llx", (long long)x);
+}
+
 ogs_uint24_t ogs_uint24_from_string(char *str)
 {
     ogs_uint24_t x;
 
     ogs_assert(str);
-    OGS_HEX(str, strlen(str), &x);
+    ogs_ascii_to_hex(str, strlen(str), &x, 3);
     return ogs_be24toh(x);
 }
 
-#define OGS_24BITSTRLEN    (sizeof(ogs_uint24_t)*2+1)
-char *ogs_uint24_to_string(ogs_uint24_t x, char *str)
+uint32_t ogs_uint28_from_string(char *str)
 {
+    uint32_t x;
+
     ogs_assert(str);
 
-    x = ogs_htobe24(x);
-    ogs_hex_to_ascii(&x, sizeof(x), str, OGS_24BITSTRLEN);
+    x = 0;
+    ogs_ascii_to_hex(str, strlen(str), &x, 4);
 
-    return str;
+    return be32toh(x) >> 4;
+}
+
+uint32_t ogs_uint32_from_string(char *str)
+{
+    uint32_t x;
+
+    ogs_assert(str);
+    ogs_ascii_to_hex(str, strlen(str), &x, 4);
+    return be32toh(x);
+}
+
+uint64_t ogs_uint36_from_string(char *str)
+{
+    uint64_t x;
+
+    ogs_assert(str);
+
+    x = 0;
+    ogs_ascii_to_hex(str, strlen(str), &x, 5);
+
+    return be64toh(x) >> 28;
 }

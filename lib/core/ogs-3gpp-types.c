@@ -246,46 +246,6 @@ char *ogs_id_get_value(char *str)
     return ueid;
 }
 
-char *ogs_tac_to_string(ogs_uint24_t tac)
-{
-    return ogs_msprintf("%06x", tac.v);
-}
-
-ogs_uint24_t ogs_tac_from_string(const char *hex)
-{
-    ogs_uint24_t tac;
-    char hexbuf[sizeof(ogs_uint24_t)];
-
-    tac.v = 0;
-    if (hex == NULL)
-        return tac;
-
-    OGS_HEX(hex, strlen(hex), hexbuf);
-    memcpy(&tac, hexbuf, 3);
-
-    return ogs_be24toh(tac);
-}
-
-char *ogs_nr_cell_id_to_string(uint64_t nr_cell_id)
-{
-    return ogs_msprintf("%09llx", (long long)nr_cell_id);
-}
-
-uint64_t ogs_nr_cell_id_from_string(const char *hex)
-{
-    uint64_t nr_cell_id;
-    char hexbuf[5];
-
-    nr_cell_id = 0;
-    if (hex == NULL)
-        return nr_cell_id;
-
-    OGS_HEX(hex, strlen(hex), hexbuf);
-    memcpy(&nr_cell_id, hexbuf, 5);
-
-    return nr_cell_id;
-}
-
 char *ogs_s_nssai_sd_to_string(ogs_uint24_t sd)
 {
     if (sd.v != OGS_S_NSSAI_NO_SD_VALUE)

@@ -387,6 +387,33 @@ OpenAPI_nr_location_t *ogs_sbi_build_nr_location(
     return NrLocation;
 }
 
+void ogs_sbi_parse_nr_location(ogs_5gs_tai_t *tai, ogs_nr_cgi_t *nr_cgi,
+        OpenAPI_nr_location_t *NrLocation)
+{
+    OpenAPI_tai_t *Tai = NULL;
+    OpenAPI_ncgi_t *Ncgi = NULL;
+
+    ogs_assert(tai);
+    ogs_assert(nr_cgi);
+    ogs_assert(NrLocation);
+
+    Tai = NrLocation->tai;
+    ogs_assert(Tai);
+    ogs_assert(Tai->plmn_id);
+    ogs_assert(Tai->tac);
+
+    ogs_sbi_parse_plmn_id(&tai->plmn_id, Tai->plmn_id);
+    tai->tac = ogs_uint24_from_string(Tai->tac);
+
+    Ncgi = NrLocation->ncgi;
+    ogs_assert(Ncgi);
+    ogs_assert(Ncgi->plmn_id);
+    ogs_assert(Ncgi->nr_cell_id);
+
+    ogs_sbi_parse_plmn_id(&nr_cgi->plmn_id, Ncgi->plmn_id);
+    nr_cgi->cell_id = ogs_uint36_from_string(Ncgi->nr_cell_id);
+}
+
 void ogs_sbi_free_nr_location(OpenAPI_nr_location_t *NrLocation)
 {
     OpenAPI_tai_t *Tai = NULL;

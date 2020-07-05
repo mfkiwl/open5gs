@@ -63,6 +63,8 @@ void ogs_sbi_free_guami(OpenAPI_guami_t *Guami);
 
 OpenAPI_nr_location_t *ogs_sbi_build_nr_location(
     ogs_5gs_tai_t *tai, ogs_nr_cgi_t *nr_cgi);
+void ogs_sbi_parse_nr_location(ogs_5gs_tai_t *tai, ogs_nr_cgi_t *nr_cgi,
+        OpenAPI_nr_location_t *NrLocation);
 void ogs_sbi_free_nr_location(OpenAPI_nr_location_t *NrLocation);
 
 #ifdef __cplusplus

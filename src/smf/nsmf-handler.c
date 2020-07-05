@@ -35,6 +35,7 @@ bool smf_nsmf_handle_create_sm_context(
     ogs_sockaddr_t *addr = NULL;
 
     OpenAPI_sm_context_create_data_t *SmContextCreateData = NULL;
+    OpenAPI_nr_location_t *NrLocation = NULL;
     OpenAPI_snssai_t *sNssai = NULL;
     OpenAPI_plmn_id_nid_t *servingNetwork = NULL;
     OpenAPI_ref_to_binary_data_t *n1SmMsg = NULL;
@@ -79,6 +80,31 @@ bool smf_nsmf_handle_create_sm_context(
         smf_sbi_send_sm_context_create_error(session,
                 OGS_SBI_HTTP_STATUS_BAD_REQUEST,
                 "No servingNetwork", smf_ue->supi, n1smbuf);
+        return false;
+    }
+
+    if (!SmContextCreateData->ue_location ||
+        !SmContextCreateData->ue_location->nr_location) {
+        ogs_error("[%s:%d] No UeLocation", smf_ue->supi, sess->psi);
+        n1smbuf = gsm_build_pdu_session_establishment_reject(sess,
+            OGS_5GSM_CAUSE_INVALID_MANDATORY_INFORMATION);
+        smf_sbi_send_sm_context_create_error(session,
+                OGS_SBI_HTTP_STATUS_BAD_REQUEST,
+                "No UeLocation", smf_ue->supi, n1smbuf);
+        return false;
+    }
+
+    NrLocation = SmContextCreateData->ue_location->nr_location;
+    if (!NrLocation->tai ||
+        !NrLocation->tai->plmn_id || !NrLocation->tai->tac ||
+        !NrLocation->ncgi ||
+        !NrLocation->ncgi->plmn_id || !NrLocation->ncgi->nr_cell_id) {
+        ogs_error("[%s:%d] No NrLocation", smf_ue->supi, sess->psi);
+        n1smbuf = gsm_build_pdu_session_establishment_reject(sess,
+            OGS_5GSM_CAUSE_INVALID_MANDATORY_INFORMATION);
+        smf_sbi_send_sm_context_create_error(session,
+                OGS_SBI_HTTP_STATUS_BAD_REQUEST,
+                "No UeLocation", smf_ue->supi, n1smbuf);
         return false;
     }
 
@@ -133,6 +159,8 @@ bool smf_nsmf_handle_create_sm_context(
         atoi(servingNetwork->mcc), atoi(servingNetwork->mnc),
         strlen(servingNetwork->mnc));
     sess->nid = servingNetwork->nid;
+
+    ogs_sbi_parse_nr_location(&sess->tai, &sess->nr_cgi, NrLocation);
 
     sess->s_nssai.sst = sNssai->sst;
     sess->s_nssai.sd = ogs_s_nssai_sd_from_string(sNssai->sd);

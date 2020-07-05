@@ -49,7 +49,7 @@ typedef struct ogs_sbi_client_s {
         const char  *pem;
     } tls;
 
-    ogs_sbi_client_cb_f cb;
+    ogs_sbi_client_cb_f cb;             /* Only used when NF send to NRF */
 
     ogs_timer_t     *t_curl;            /* timer for CURL */
     ogs_list_t      connection_list;    /* CURL connection list */

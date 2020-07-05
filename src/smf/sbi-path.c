@@ -88,18 +88,23 @@ int smf_sbi_open(void)
         ogs_sbi_nf_service_t *service = NULL;
         ogs_sbi_client_t *client = NULL;
 
+        /* Build NF instance information. It will be transmitted to NRF. */
         ogs_sbi_nf_instance_build_default(nf_instance, smf_self()->nf_type);
 
+        /* Build NF service information. It will be transmitted to NRF. */
         service = ogs_sbi_nf_service_build_default(nf_instance,
                 (char*)OGS_SBI_SERVICE_NAME_NSMF_PDUSESSION);
         ogs_assert(service);
         ogs_sbi_nf_service_add_version(service, (char*)OGS_SBI_API_V1,
                 (char*)OGS_SBI_API_V1_0_0, NULL);
 
+        /* Client callback is only used when NF sends to NRF */
         client = nf_instance->client;
         ogs_assert(client);
         client->cb = client_cb;
 
+        /* NFRegister is sent and the response is received
+         * by the above client callback. */
         smf_nf_fsm_init(nf_instance);
     }
 

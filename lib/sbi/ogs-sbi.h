@@ -75,8 +75,11 @@
 #include "sbi/client.h"
 #include "sbi/context.h"
 
+#include "sbi/common-build.h"
+
 #include "sbi/nnrf-build.h"
 #include "sbi/nnrf-handler.h"
+
 #include "sbi/path.h"
 
 #undef OGS_SBI_INSIDE

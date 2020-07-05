@@ -32,15 +32,11 @@ ogs_sbi_request_t *amf_nsmf_pdu_session_build_create_sm_context(
     amf_ue_t *amf_ue = NULL;
 
     OpenAPI_sm_context_create_data_t SmContextCreateData;
-    OpenAPI_plmn_id_nid_t servingNetwork;
     OpenAPI_snssai_t sNssai;
     OpenAPI_snssai_t hplmnSnssai;
     OpenAPI_ref_to_binary_data_t n1SmMsg;
     OpenAPI_guami_t guami;
     OpenAPI_user_location_t ueLocation;
-    OpenAPI_nr_location_t nrLocation;
-    OpenAPI_tai_t tai;
-    OpenAPI_ncgi_t ncgi;
 
     ogs_assert(sess);
     amf_ue = sess->amf_ue;
@@ -58,10 +54,8 @@ ogs_sbi_request_t *amf_nsmf_pdu_session_build_create_sm_context(
 
     SmContextCreateData.serving_nf_id = ogs_sbi_self()->nf_instance_id;
 
-    servingNetwork.mcc = ogs_plmn_id_mcc_string(&amf_ue->tai.plmn_id);
-    servingNetwork.mnc = ogs_plmn_id_mnc_string(&amf_ue->tai.plmn_id);
-    servingNetwork.nid = NULL;
-    SmContextCreateData.serving_network = &servingNetwork;
+    SmContextCreateData.serving_network =
+        ogs_common_build_plmn_id_nid(&amf_ue->tai.plmn_id, NULL);
 
     SmContextCreateData.supi = amf_ue->supi;
     SmContextCreateData.pei = amf_ue->pei;
@@ -89,7 +83,7 @@ ogs_sbi_request_t *amf_nsmf_pdu_session_build_create_sm_context(
 
     ogs_assert(amf_ue->guami);
     guami.amf_id = ogs_amf_id_to_string(&amf_ue->guami->amf_id, buf);
-    guami.plmn_id = (OpenAPI_plmn_id_t *)&servingNetwork;
+    guami.plmn_id = ogs_common_build_plmn_id(&amf_ue->tai.plmn_id);
     SmContextCreateData.guami = &guami;
 
     SmContextCreateData.an_type = amf_ue->nas.access_type; 
@@ -110,19 +104,9 @@ ogs_sbi_request_t *amf_nsmf_pdu_session_build_create_sm_context(
     n1SmMsg.content_id = (char *)OGS_SBI_CONTENT_5GNAS_SM_ID;
     SmContextCreateData.n1_sm_msg = &n1SmMsg;
 
-    memset(&tai, 0, sizeof(tai));
-    tai.plmn_id = (OpenAPI_plmn_id_t *)&servingNetwork;
-    tai.tac = ogs_uint24_to_string(amf_ue->tai.tac);
-    memset(&ncgi, 0, sizeof(ncgi));
-    ncgi.plmn_id = (OpenAPI_plmn_id_t *)&servingNetwork;
-    ncgi.nr_cell_id = ogs_uint36_to_string(amf_ue->nr_cgi.cell_id);
-
-    memset(&nrLocation, 0, sizeof(nrLocation));
-    nrLocation.tai = &tai;
-    nrLocation.ncgi = &ncgi;
-
     memset(&ueLocation, 0, sizeof(ueLocation));
-    ueLocation.nr_location = &nrLocation;
+    ueLocation.nr_location = ogs_common_build_nr_location(
+            &amf_ue->tai, &amf_ue->nr_cgi);
 
     SmContextCreateData.ue_location = &ueLocation;
 
@@ -143,20 +127,20 @@ ogs_sbi_request_t *amf_nsmf_pdu_session_build_create_sm_context(
     request = ogs_sbi_build_request(&message);
     ogs_assert(request);
 
-    ogs_free(servingNetwork.mcc);
-    ogs_free(servingNetwork.mnc);
+    if (SmContextCreateData.serving_network)
+        ogs_common_free_plmn_id_nid(SmContextCreateData.serving_network);
     ogs_free(SmContextCreateData.sm_context_status_uri);
     ogs_free(header.resource.component[2]);
     if (sNssai.sd)
         ogs_free(sNssai.sd);
     if (hplmnSnssai.sd)
         ogs_free(hplmnSnssai.sd);
-    if (tai.tac)
-        ogs_free(tai.tac);
-    if (ncgi.nr_cell_id)
-        ogs_free(ncgi.nr_cell_id);
+    if (guami.plmn_id)
+        ogs_common_free_plmn_id(guami.plmn_id);
     if (SmContextCreateData.gpsi)
         ogs_free(SmContextCreateData.gpsi);
+    if (ueLocation.nr_location)
+        ogs_common_free_nr_location(ueLocation.nr_location);
 
     return request;
 }

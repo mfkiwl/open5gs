@@ -393,7 +393,7 @@ typedef struct ogs_nas_time_zone_and_time_s {
      * the first bit (bit 3 of the seventh octet of 
      * the TP-Service-Centre-Time-Stamp field) represents 
      * the algebraic sign of this difference (0: positive, 1: negative). */
-    uint8_t timezone;  
+    uint8_t timezone;
 } ogs_nas_time_zone_and_time_t;
 
 /* 9.9.3.33 Tracking area identity list

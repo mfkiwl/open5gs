@@ -46,6 +46,8 @@ ogs_sockaddr_t *ogs_sbi_getaddr_from_uri(char *uri);
 char *ogs_sbi_bitrate_to_string(uint64_t bitrate, int unit);
 uint64_t ogs_sbi_bitrate_from_string(char *str);
 
+char *ogs_sbi_timestamp_to_string(ogs_time_t diff_seconds);
+
 OpenAPI_plmn_id_t *ogs_sbi_build_plmn_id(ogs_plmn_id_t *plmn_id);
 void ogs_sbi_parse_plmn_id(
         ogs_plmn_id_t *plmn_id, OpenAPI_plmn_id_t *PlmnId);

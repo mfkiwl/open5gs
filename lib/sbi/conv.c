@@ -231,6 +231,21 @@ uint64_t ogs_sbi_bitrate_from_string(char *str)
     return bitrate;
 }
 
+char *ogs_sbi_timestamp_to_string(ogs_time_t diff_seconds)
+{
+    char buf[OGS_TIME_ISO8601_FORMATTED_LENGTH];
+    struct timeval tv;
+    struct tm local;
+
+    ogs_gettimeofday(&tv);
+    tv.tv_sec += diff_seconds;
+    ogs_localtime(tv.tv_sec, &local);
+    ogs_strftime(buf, OGS_TIME_ISO8601_FORMATTED_LENGTH,
+            OGS_TIME_ISO8601_FORMAT, &local);
+
+    return ogs_strdup(buf);
+}
+
 OpenAPI_plmn_id_t *ogs_sbi_build_plmn_id(ogs_plmn_id_t *plmn_id)
 {
     OpenAPI_plmn_id_t *PlmnId = NULL;

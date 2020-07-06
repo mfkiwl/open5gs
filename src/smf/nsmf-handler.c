@@ -156,7 +156,8 @@ bool smf_nsmf_handle_create_sm_context(
     }
 
     ogs_sbi_parse_plmn_id_nid(&sess->plmn_id, servingNetwork);
-    ogs_sbi_parse_nr_location(&sess->tai, &sess->nr_cgi, NrLocation);
+    ogs_sbi_parse_nr_location(
+            &sess->tai, &sess->nr_cgi, &sess->now, NrLocation);
 
     sess->s_nssai.sst = sNssai->sst;
     sess->s_nssai.sd = ogs_s_nssai_sd_from_string(sNssai->sd);

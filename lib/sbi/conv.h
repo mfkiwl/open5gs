@@ -64,8 +64,9 @@ bool ogs_sbi_parse_guami(ogs_guami_t *guami, OpenAPI_guami_t *Guami);
 void ogs_sbi_free_guami(OpenAPI_guami_t *Guami);
 
 OpenAPI_nr_location_t *ogs_sbi_build_nr_location(
-    ogs_5gs_tai_t *tai, ogs_nr_cgi_t *nr_cgi);
-bool ogs_sbi_parse_nr_location(ogs_5gs_tai_t *tai, ogs_nr_cgi_t *nr_cgi,
+    ogs_5gs_tai_t *tai, ogs_nr_cgi_t *nr_cgi, ogs_time_t now);
+bool ogs_sbi_parse_nr_location(
+        ogs_5gs_tai_t *tai, ogs_nr_cgi_t *nr_cgi, ogs_time_t *now,
         OpenAPI_nr_location_t *NrLocation);
 void ogs_sbi_free_nr_location(OpenAPI_nr_location_t *NrLocation);
 

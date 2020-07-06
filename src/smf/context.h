@@ -180,6 +180,7 @@ typedef struct smf_sess_s {
     /* NR Location */
     ogs_5gs_tai_t   tai;
     ogs_nr_cgi_t    nr_cgi;
+    ogs_time_t      now;
 
     /* S_NSSAI & DNN */
     ogs_s_nssai_t   s_nssai;

@@ -391,7 +391,7 @@ void ogs_sbi_free_guami(OpenAPI_guami_t *Guami)
 }
 
 OpenAPI_nr_location_t *ogs_sbi_build_nr_location(
-    ogs_5gs_tai_t *tai, ogs_nr_cgi_t *nr_cgi)
+    ogs_5gs_tai_t *tai, ogs_nr_cgi_t *nr_cgi, ogs_time_t now)
 {
     OpenAPI_nr_location_t *NrLocation = NULL;
     OpenAPI_tai_t *Tai = NULL;
@@ -414,11 +414,14 @@ OpenAPI_nr_location_t *ogs_sbi_build_nr_location(
     ogs_assert(NrLocation);
     NrLocation->tai = Tai;
     NrLocation->ncgi = Ncgi;
+    if (now)
+        NrLocation->ue_location_timestamp = ogs_sbi_build_timestamp(now);
 
     return NrLocation;
 }
 
-bool ogs_sbi_parse_nr_location(ogs_5gs_tai_t *tai, ogs_nr_cgi_t *nr_cgi,
+bool ogs_sbi_parse_nr_location(
+        ogs_5gs_tai_t *tai, ogs_nr_cgi_t *nr_cgi, ogs_time_t *now,
         OpenAPI_nr_location_t *NrLocation)
 {
     OpenAPI_tai_t *Tai = NULL;
@@ -426,6 +429,7 @@ bool ogs_sbi_parse_nr_location(ogs_5gs_tai_t *tai, ogs_nr_cgi_t *nr_cgi,
 
     ogs_assert(tai);
     ogs_assert(nr_cgi);
+    ogs_assert(now);
     ogs_assert(NrLocation);
 
     Tai = NrLocation->tai;
@@ -443,6 +447,9 @@ bool ogs_sbi_parse_nr_location(ogs_5gs_tai_t *tai, ogs_nr_cgi_t *nr_cgi,
 
     ogs_sbi_parse_plmn_id(&nr_cgi->plmn_id, Ncgi->plmn_id);
     nr_cgi->cell_id = ogs_uint36_from_string(Ncgi->nr_cell_id);
+
+    if (NrLocation->ue_location_timestamp)
+        ogs_sbi_parse_timestamp(now, NrLocation->ue_location_timestamp);
 
     return true;
 }
@@ -471,6 +478,9 @@ void ogs_sbi_free_nr_location(OpenAPI_nr_location_t *NrLocation)
             ogs_free(Ncgi->nr_cell_id);
         ogs_free(Ncgi);
     }
+
+    if (NrLocation->ue_location_timestamp)
+        ogs_free(NrLocation->ue_location_timestamp);
 
     ogs_free(NrLocation);
 }

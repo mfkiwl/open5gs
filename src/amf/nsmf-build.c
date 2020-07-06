@@ -100,7 +100,7 @@ ogs_sbi_request_t *amf_nsmf_pdu_session_build_create_sm_context(
 
     memset(&ueLocation, 0, sizeof(ueLocation));
     ueLocation.nr_location = ogs_sbi_build_nr_location(
-            &amf_ue->tai, &amf_ue->nr_cgi);
+            &amf_ue->tai, &amf_ue->nr_cgi, ogs_time_now());
 
     SmContextCreateData.ue_location = &ueLocation;
 

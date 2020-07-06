@@ -179,8 +179,8 @@ bool nrf_nnrf_handle_nf_status_subscribe(
     ogs_freeaddrinfo(addr);
 
     if (subscription->time.validity) {
-        SubscriptionData->validity_time =
-            ogs_sbi_timestamp_to_string(subscription->time.validity);
+        SubscriptionData->validity_time = ogs_sbi_timestamp_to_string(
+                    ogs_time_from_sec(subscription->time.validity));
 
         subscription->t_validity = ogs_timer_add(nrf_self()->timer_mgr,
             nrf_timer_subscription_validity, subscription);

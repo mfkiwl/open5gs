@@ -256,7 +256,7 @@ bool ogs_sbi_parse_timestamp(ogs_time_t *time, char *str)
         return false;
     }
 
-    *time = ogs_mktime(&tm);
+    *time = ogs_mktime(&tm) * OGS_USEC_PER_SEC;
 
     return true;
 }

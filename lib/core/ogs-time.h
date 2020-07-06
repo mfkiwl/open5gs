@@ -34,7 +34,7 @@ typedef int64_t ogs_time_t;
 #define OGS_NO_WAIT_TIME (0)
 
 /** number of microseconds per second */
-#define OGS_USEC_PER_SEC (1000000)
+#define OGS_USEC_PER_SEC (1000000UL)
 
 /** @return ogs_time_t as a second */
 #define ogs_time_sec(time) ((time) / OGS_USEC_PER_SEC)

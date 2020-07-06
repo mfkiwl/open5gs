@@ -231,24 +231,25 @@ uint64_t ogs_sbi_bitrate_from_string(char *str)
     return bitrate;
 }
 
-char *ogs_sbi_build_timestamp(ogs_time_t time)
+char *ogs_sbi_build_timestamp(ogs_time_t timestamp)
 {
     char buf[OGS_TIME_ISO8601_FORMATTED_LENGTH];
     struct tm tm;
 
-    ogs_localtime(ogs_time_sec(time), &tm);
+    ogs_localtime(ogs_time_sec(timestamp), &tm);
     ogs_strftime(buf, OGS_TIME_ISO8601_FORMATTED_LENGTH,
             OGS_TIME_ISO8601_FORMAT, &tm);
 
     return ogs_strdup(buf);
 }
 
-bool ogs_sbi_parse_timestamp(ogs_time_t *time, char *str)
+bool ogs_sbi_parse_timestamp(ogs_time_t *timestamp, char *str)
 {
+    int rv;
     struct tm tm;
 
     ogs_assert(str);
-    ogs_assert(time);
+    ogs_assert(timestamp);
 
     memset(&tm, 0, sizeof(tm));
     if (ogs_strptime(str, OGS_TIME_ISO8601_FORMAT, &tm) == NULL) {
@@ -256,7 +257,11 @@ bool ogs_sbi_parse_timestamp(ogs_time_t *time, char *str)
         return false;
     }
 
-    *time = ogs_mktime(&tm) * OGS_USEC_PER_SEC;
+    rv = ogs_time_gmt_get(timestamp, &tm, 0);
+    if (rv != OGS_OK) {
+        ogs_error("Cannot convert time [%s]", str);
+        return false;
+    }
 
     return true;
 }

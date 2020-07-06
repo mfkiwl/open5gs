@@ -165,6 +165,7 @@ amf:
       - addr: 127.0.0.2
         port: 7777
     ngap:
+      - addr: 127.0.0.2
     guami:
       - plmn_id:
           mcc: 901

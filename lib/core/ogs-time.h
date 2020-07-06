@@ -55,7 +55,10 @@ typedef int64_t ogs_time_t;
 #define ogs_time_from_sec(sec) ((ogs_time_t)(sec) * OGS_USEC_PER_SEC)
 
 int ogs_gettimeofday(struct timeval *tv);
+
 ogs_time_t ogs_time_now(void); /* This returns GMT */
+int ogs_time_get(ogs_time_t *t, struct tm *tm, int tm_usec);
+int ogs_time_gmt_get(ogs_time_t *t, struct tm *tm, int tm_usec);
 
 /** @return number of microseconds since an arbitrary point */
 ogs_time_t ogs_get_monotonic_time(void);

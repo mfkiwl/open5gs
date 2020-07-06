@@ -36,7 +36,6 @@
  * The following code is stolen from mongodb-c-driver
  * https://github.com/mongodb/mongo-c-driver/blob/master/src/libbson/src/bson/bson-clock.c
  */
-
 int ogs_gettimeofday(struct timeval *tv)
 {
 #if defined(_WIN32)
@@ -93,6 +92,45 @@ ogs_time_t ogs_time_now(void)
     ogs_assert(rc == 0);
 
     return tv.tv_sec * OGS_USEC_PER_SEC + tv.tv_usec;
+}
+
+/* The following code is stolen from APR library */
+int ogs_time_get(ogs_time_t *t, struct tm *tm, int tm_usec)
+{
+    ogs_time_t year = tm->tm_year;
+    ogs_time_t days;
+    static const int dayoffset[12] =
+    {306, 337, 0, 31, 61, 92, 122, 153, 184, 214, 245, 275};
+
+    if (tm->tm_mon < 0 || tm->tm_mon >= 12)
+        return OGS_ERROR;
+
+    /* shift new year to 1st March in order to make leap year calc easy */
+
+    if (tm->tm_mon < 2)
+        year--;
+
+    /* Find number of days since 1st March 1900 (in the Gregorian calendar). */
+
+    days = year * 365 + year / 4 - year / 100 + (year / 100 + 3) / 4;
+    days += dayoffset[tm->tm_mon] + tm->tm_mday - 1;
+    days -= 25508;              /* 1 jan 1970 is 25508 days since 1 mar 1900 */
+    days = ((days * 24 + tm->tm_hour) * 60 + tm->tm_min) * 60 + tm->tm_sec;
+
+    if (days < 0) {
+        return OGS_ERROR;
+    }
+    *t = days * OGS_USEC_PER_SEC + tm_usec;
+
+    return OGS_OK;
+}
+
+int ogs_time_gmt_get(ogs_time_t *t, struct tm *tm, int tm_usec)
+{
+    int status = ogs_time_get(t, tm, tm_usec);
+    if (status == OGS_OK)
+        *t -= (ogs_time_t) tm->tm_gmtoff * OGS_USEC_PER_SEC;
+    return status;
 }
 
 int ogs_timezone(void)
@@ -173,6 +211,7 @@ ogs_time_t ogs_get_monotonic_time(void)
 void ogs_localtime(time_t s, struct tm *tm)
 {
     ogs_assert(tm);
+    memset(tm, 0, sizeof(*tm));
 
 #if (HAVE_LOCALTIME_R)
     (void)localtime_r(&s, tm);
@@ -187,6 +226,7 @@ void ogs_localtime(time_t s, struct tm *tm)
 void ogs_gmtime(time_t s, struct tm *tm)
 {
     ogs_assert(tm);
+    memset(tm, 0, sizeof(*tm));
 
 #if (HAVE_LOCALTIME_R)
     (void)gmtime_r(&s, tm);

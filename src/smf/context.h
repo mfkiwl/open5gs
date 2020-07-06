@@ -176,7 +176,6 @@ typedef struct smf_sess_s {
 
     /* PLMN ID & NID */
     ogs_plmn_id_t   plmn_id;
-    uint8_t         *nid;
 
     /* NR Location */
     ogs_5gs_tai_t   tai;

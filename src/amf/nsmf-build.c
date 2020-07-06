@@ -53,7 +53,7 @@ ogs_sbi_request_t *amf_nsmf_pdu_session_build_create_sm_context(
     SmContextCreateData.serving_nf_id = ogs_sbi_self()->nf_instance_id;
 
     SmContextCreateData.serving_network =
-        ogs_sbi_build_plmn_id_nid(&amf_ue->tai.plmn_id, NULL);
+        ogs_sbi_build_plmn_id_nid(&amf_ue->tai.plmn_id);
 
     SmContextCreateData.supi = amf_ue->supi;
     SmContextCreateData.pei = amf_ue->pei;

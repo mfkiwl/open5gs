@@ -231,20 +231,38 @@ uint64_t ogs_sbi_bitrate_from_string(char *str)
     return bitrate;
 }
 
-char *ogs_sbi_timestamp_to_string(ogs_time_t diff)
+char *ogs_sbi_build_timestamp(ogs_time_t diff)
 {
     char buf[OGS_TIME_ISO8601_FORMATTED_LENGTH];
     struct timeval tv;
-    struct tm local;
+    struct tm tm;
 
     ogs_gettimeofday(&tv);
     tv.tv_sec += ogs_time_sec(diff);
     tv.tv_usec += ogs_time_usec(diff);
-    ogs_localtime(tv.tv_sec, &local);
+    ogs_localtime(tv.tv_sec, &tm);
     ogs_strftime(buf, OGS_TIME_ISO8601_FORMATTED_LENGTH,
-            OGS_TIME_ISO8601_FORMAT, &local);
+            OGS_TIME_ISO8601_FORMAT, &tm);
 
     return ogs_strdup(buf);
+}
+
+bool ogs_sbi_parse_timestamp(ogs_time_t *time, char *str)
+{
+    struct tm tm;
+
+    ogs_assert(str);
+    ogs_assert(time);
+
+    memset(&tm, 0, sizeof(tm));
+    if (ogs_strptime(str, OGS_TIME_ISO8601_FORMAT, &tm) == NULL) {
+        ogs_error("Cannot parse timestamp [%s]", str);
+        return false;
+    }
+
+    *time = ogs_mktime(&tm);
+
+    return true;
 }
 
 OpenAPI_plmn_id_t *ogs_sbi_build_plmn_id(ogs_plmn_id_t *plmn_id)
@@ -264,7 +282,7 @@ OpenAPI_plmn_id_t *ogs_sbi_build_plmn_id(ogs_plmn_id_t *plmn_id)
     return PlmnId;
 }
 
-void ogs_sbi_parse_plmn_id(
+bool ogs_sbi_parse_plmn_id(
         ogs_plmn_id_t *plmn_id, OpenAPI_plmn_id_t *PlmnId)
 {
     ogs_assert(plmn_id);
@@ -274,6 +292,8 @@ void ogs_sbi_parse_plmn_id(
 
     ogs_plmn_id_build(plmn_id,
             atoi(PlmnId->mcc), atoi(PlmnId->mnc), strlen(PlmnId->mnc));
+
+    return true;
 }
 
 void ogs_sbi_free_plmn_id(OpenAPI_plmn_id_t *PlmnId)
@@ -305,7 +325,7 @@ OpenAPI_plmn_id_nid_t *ogs_sbi_build_plmn_id_nid(ogs_plmn_id_t *plmn_id)
     return PlmnIdNid;
 }
 
-void ogs_sbi_parse_plmn_id_nid(
+bool ogs_sbi_parse_plmn_id_nid(
         ogs_plmn_id_t *plmn_id, OpenAPI_plmn_id_nid_t *PlmnIdNid)
 {
     ogs_assert(plmn_id);
@@ -315,6 +335,8 @@ void ogs_sbi_parse_plmn_id_nid(
 
     ogs_plmn_id_build(plmn_id,
             atoi(PlmnIdNid->mcc), atoi(PlmnIdNid->mnc), strlen(PlmnIdNid->mnc));
+
+    return true;
 }
 
 void ogs_sbi_free_plmn_id_nid(OpenAPI_plmn_id_nid_t *PlmnIdNid)
@@ -348,7 +370,7 @@ OpenAPI_guami_t *ogs_sbi_build_guami(ogs_guami_t *guami)
     return Guami;
 }
 
-void ogs_sbi_parse_guami(ogs_guami_t *guami, OpenAPI_guami_t *Guami)
+bool ogs_sbi_parse_guami(ogs_guami_t *guami, OpenAPI_guami_t *Guami)
 {
     ogs_assert(guami);
     ogs_assert(Guami);
@@ -357,6 +379,8 @@ void ogs_sbi_parse_guami(ogs_guami_t *guami, OpenAPI_guami_t *Guami)
 
     ogs_amf_id_from_string(&guami->amf_id, Guami->amf_id);
     ogs_sbi_parse_plmn_id(&guami->plmn_id, Guami->plmn_id);
+
+    return true;
 }
 
 void ogs_sbi_free_guami(OpenAPI_guami_t *Guami)
@@ -398,7 +422,7 @@ OpenAPI_nr_location_t *ogs_sbi_build_nr_location(
     return NrLocation;
 }
 
-void ogs_sbi_parse_nr_location(ogs_5gs_tai_t *tai, ogs_nr_cgi_t *nr_cgi,
+bool ogs_sbi_parse_nr_location(ogs_5gs_tai_t *tai, ogs_nr_cgi_t *nr_cgi,
         OpenAPI_nr_location_t *NrLocation)
 {
     OpenAPI_tai_t *Tai = NULL;
@@ -423,6 +447,8 @@ void ogs_sbi_parse_nr_location(ogs_5gs_tai_t *tai, ogs_nr_cgi_t *nr_cgi,
 
     ogs_sbi_parse_plmn_id(&nr_cgi->plmn_id, Ncgi->plmn_id);
     nr_cgi->cell_id = ogs_uint36_from_string(Ncgi->nr_cell_id);
+
+    return true;
 }
 
 void ogs_sbi_free_nr_location(OpenAPI_nr_location_t *NrLocation)

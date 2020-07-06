@@ -84,6 +84,17 @@ int ogs_gettimeofday(struct timeval *tv)
 #endif
 }
 
+ogs_time_t ogs_time_now(void)
+{
+    int rc;
+    struct timeval tv;
+
+    rc = ogs_gettimeofday(&tv);
+    ogs_assert(rc == 0);
+
+    return tv.tv_sec * OGS_USEC_PER_SEC + tv.tv_usec;
+}
+
 int ogs_timezone(void)
 {
 #if defined(_WIN32)
@@ -208,4 +219,3 @@ void ogs_usleep(time_t usec)
         req = rem;
 #endif
 }
-

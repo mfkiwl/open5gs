@@ -46,7 +46,7 @@ ogs_sockaddr_t *ogs_sbi_getaddr_from_uri(char *uri);
 char *ogs_sbi_bitrate_to_string(uint64_t bitrate, int unit);
 uint64_t ogs_sbi_bitrate_from_string(char *str);
 
-char *ogs_sbi_build_timestamp(ogs_time_t diff);
+char *ogs_sbi_build_timestamp(ogs_time_t time);
 bool ogs_sbi_parse_timestamp(ogs_time_t *time, char *str);
 
 OpenAPI_plmn_id_t *ogs_sbi_build_plmn_id(ogs_plmn_id_t *plmn_id);

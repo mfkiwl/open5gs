@@ -85,7 +85,7 @@ ogs_sbi_request_t *ausf_nudm_ueau_build_result_confirmation_inform(
     AuthEvent = ogs_calloc(1, sizeof(*AuthEvent));
     ogs_assert(AuthEvent);
 
-    AuthEvent->time_stamp = ogs_sbi_build_timestamp(0);
+    AuthEvent->time_stamp = ogs_sbi_build_timestamp(ogs_time_now());
 
     AuthEvent->nf_instance_id = ogs_sbi_self()->nf_instance_id;
     if (ausf_ue->auth_result == OpenAPI_auth_result_AUTHENTICATION_SUCCESS)

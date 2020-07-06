@@ -231,16 +231,12 @@ uint64_t ogs_sbi_bitrate_from_string(char *str)
     return bitrate;
 }
 
-char *ogs_sbi_build_timestamp(ogs_time_t diff)
+char *ogs_sbi_build_timestamp(ogs_time_t time)
 {
     char buf[OGS_TIME_ISO8601_FORMATTED_LENGTH];
-    struct timeval tv;
     struct tm tm;
 
-    ogs_gettimeofday(&tv);
-    tv.tv_sec += ogs_time_sec(diff);
-    tv.tv_usec += ogs_time_usec(diff);
-    ogs_localtime(tv.tv_sec, &tm);
+    ogs_localtime(ogs_time_sec(time), &tm);
     ogs_strftime(buf, OGS_TIME_ISO8601_FORMATTED_LENGTH,
             OGS_TIME_ISO8601_FORMAT, &tm);
 

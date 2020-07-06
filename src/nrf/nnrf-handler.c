@@ -180,7 +180,7 @@ bool nrf_nnrf_handle_nf_status_subscribe(
 
     if (subscription->time.validity) {
         SubscriptionData->validity_time = ogs_sbi_build_timestamp(
-                    ogs_time_from_sec(subscription->time.validity));
+            ogs_time_now() + ogs_time_from_sec(subscription->time.validity));
 
         subscription->t_validity = ogs_timer_add(nrf_self()->timer_mgr,
             nrf_timer_subscription_validity, subscription);

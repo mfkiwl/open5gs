@@ -412,10 +412,10 @@ int16_t ogs_gtp_build_uli(ogs_tlv_octet_t *octet,
 #define OGS_GTP_F_TEID_S11_MME_GTP_U                            38
 #define OGS_GTP_F_TEID_S11_SGW_GTP_U                            39
 
-#define OGS_GTP_F_TEID_HDR_LEN              5
-#define OGS_GTP_F_TEID_IPV4_LEN             OGS_IPV4_LEN+OGS_GTP_F_TEID_HDR_LEN
-#define OGS_GTP_F_TEID_IPV6_LEN             OGS_IPV6_LEN+OGS_GTP_F_TEID_HDR_LEN
-#define OGS_GTP_F_TEID_IPV4V6_LEN           OGS_IPV4V6_LEN+OGS_GTP_F_TEID_HDR_LEN
+#define OGS_GTP_F_TEID_HDR_LEN          5
+#define OGS_GTP_F_TEID_IPV4_LEN         OGS_IPV4_LEN+OGS_GTP_F_TEID_HDR_LEN
+#define OGS_GTP_F_TEID_IPV6_LEN         OGS_IPV6_LEN+OGS_GTP_F_TEID_HDR_LEN
+#define OGS_GTP_F_TEID_IPV4V6_LEN       OGS_IPV4V6_LEN+OGS_GTP_F_TEID_HDR_LEN
 typedef struct ogs_gtp_f_teid_s {
 ED3(uint8_t       ipv4:1;,
     uint8_t       ipv6:1;,
@@ -477,4 +477,3 @@ ED2(uint8_t spare:6;,
 #endif
 
 #endif /* OGS_GTP_TYPES_H */
-

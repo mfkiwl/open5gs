@@ -438,20 +438,21 @@ bool ogs_sbi_parse_nr_location(
     ogs_assert(NrLocation);
 
     Tai = NrLocation->tai;
-    ogs_assert(Tai);
-    ogs_assert(Tai->plmn_id);
-    ogs_assert(Tai->tac);
-
-    ogs_sbi_parse_plmn_id(&tai->plmn_id, Tai->plmn_id);
-    tai->tac = ogs_uint24_from_string(Tai->tac);
+    if (Tai) {
+        if (Tai->plmn_id)
+            ogs_sbi_parse_plmn_id(&tai->plmn_id, Tai->plmn_id);
+        if (Tai->tac)
+            tai->tac = ogs_uint24_from_string(Tai->tac);
+    }
 
     Ncgi = NrLocation->ncgi;
-    ogs_assert(Ncgi);
-    ogs_assert(Ncgi->plmn_id);
-    ogs_assert(Ncgi->nr_cell_id);
+    if (Ncgi) {
+        if (Ncgi->plmn_id)
+            ogs_sbi_parse_plmn_id(&nr_cgi->plmn_id, Ncgi->plmn_id);
+        if (Ncgi->nr_cell_id)
+            nr_cgi->cell_id = ogs_uint36_from_string(Ncgi->nr_cell_id);
 
-    ogs_sbi_parse_plmn_id(&nr_cgi->plmn_id, Ncgi->plmn_id);
-    nr_cgi->cell_id = ogs_uint36_from_string(Ncgi->nr_cell_id);
+    }
 
     if (NrLocation->ue_location_timestamp)
         ogs_sbi_parse_timestamp(now, NrLocation->ue_location_timestamp);

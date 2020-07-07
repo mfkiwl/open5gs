@@ -22,10 +22,6 @@
 
 /* 2002-09-14 12:05:36.186711 -25200 [257 Sat]. */
 static ogs_time_t now = 1032030336186711L;
-/* 2012-08-11 16:00:55.151600 -14400 [224 Sat] DST */
-static ogs_time_t leap_year_now = 1344715255151600L;
-
-#define STR_SIZE 100
 
 static void test_now(abts_case *tc, void *data)
 {
@@ -43,15 +39,27 @@ static void test_now(abts_case *tc, void *data)
             (timediff > -2) && (timediff < 2));
 }
 
+#define STR_SIZE 100
+
 static void test_gmtstr(abts_case *tc, void *data)
 {
-    char buf[OGS_TIME_ISO8601_FORMATTED_LENGTH];
-    struct tm xt;
+    struct tm tm;
+    char *str = NULL;
 
-    ogs_gmtime(ogs_time_sec(now), &xt);
-    ogs_strftime(buf, OGS_TIME_ISO8601_FORMATTED_LENGTH,
-            OGS_TIME_ISO8601_FORMAT, &xt);
-    ABTS_STR_EQUAL(tc, "2002-09-14T19:05:36+0000", buf);
+    char datetime[STR_SIZE];
+    char timezone[STR_SIZE];
+
+    ogs_gmtime(ogs_time_sec(now), &tm);
+    ogs_strftime(datetime, sizeof datetime, "%Y-%m-%dT%H:%M:%S", &tm);
+    ogs_strftime(timezone, sizeof timezone, "%z", &tm);
+
+    str = ogs_msprintf("%s.%06lld%s",
+            datetime, (long long)ogs_time_usec(now), timezone);
+    ogs_assert(str);
+
+    ABTS_STR_EQUAL(tc, "2002-09-14T19:05:36.186711+0000", str);
+
+    ogs_free(str);
 }
 
 static void test_get_gmt(abts_case *tc, void *data)
@@ -94,23 +102,6 @@ static void test_imp_gmt(abts_case *tc, void *data)
     ABTS_TRUE(tc, now == imp);
 }
 
-static void test_strftime(abts_case *tc, void *data)
-{
-    struct tm tm;
-    char str[STR_SIZE+1];
-    time_t now = (time_t)1542100786;
-
-    ogs_gmtime(now, &tm);
-    ogs_strftime(str, sizeof str, "%Y/%m/%d %H:%M:%S", &tm);
-    ABTS_STR_EQUAL(tc, "2018/11/13 09:19:46", str);
-
-    ogs_localtime(now, &tm);
-    ogs_strftime(str, sizeof str, "%Y/%m/%d %H:%M:%S", &tm);
-#if 0 /* FIXME */
-    ABTS_STR_EQUAL(tc, "2018/11/13 18:19:46", str);
-#endif
-}
-
 abts_suite *test_time(abts_suite *suite)
 {
     suite = ADD_SUITE(suite)
@@ -120,7 +111,6 @@ abts_suite *test_time(abts_suite *suite)
     abts_run_test(suite, test_get_gmt, NULL);
     abts_run_test(suite, test_get_lt, NULL);
     abts_run_test(suite, test_imp_gmt, NULL);
-    abts_run_test(suite, test_strftime, NULL);
 
     return suite;
 }

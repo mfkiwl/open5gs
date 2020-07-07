@@ -231,33 +231,57 @@ uint64_t ogs_sbi_bitrate_from_string(char *str)
     return bitrate;
 }
 
+#define MAX_TIMESTR_LEN 128
+
 char *ogs_sbi_build_timestamp(ogs_time_t timestamp)
 {
-    char buf[OGS_TIME_ISO8601_FORMATTED_LENGTH];
     struct tm tm;
 
-    ogs_localtime(ogs_time_sec(timestamp), &tm);
-    ogs_strftime(buf, OGS_TIME_ISO8601_FORMATTED_LENGTH,
-            OGS_TIME_ISO8601_FORMAT, &tm);
+    char datetime[MAX_TIMESTR_LEN];
+    char timezone[MAX_TIMESTR_LEN];
 
-    return ogs_strdup(buf);
+    ogs_localtime(ogs_time_sec(timestamp), &tm);
+    ogs_strftime(datetime, sizeof datetime, "%Y-%m-%dT%H:%M:%S", &tm);
+    ogs_strftime(timezone, sizeof timezone, "%z", &tm);
+
+    return ogs_msprintf("%s.%06lld%s",
+            datetime, (long long)ogs_time_usec(timestamp), timezone);
 }
 
 bool ogs_sbi_parse_timestamp(ogs_time_t *timestamp, char *str)
 {
-    int rv;
+    int rv, i, j, k;
     struct tm tm;
+    bool is_seconds;
+    char seconds[MAX_TIMESTR_LEN];
+    char subsecs[MAX_TIMESTR_LEN];
+    ogs_time_t usecs;
 
     ogs_assert(str);
     ogs_assert(timestamp);
 
-    memset(&tm, 0, sizeof(tm));
-    if (ogs_strptime(str, OGS_TIME_ISO8601_FORMAT, &tm) == NULL) {
-        ogs_error("Cannot parse timestamp [%s]", str);
-        return false;
+    memset(seconds, 0, sizeof seconds);
+    memset(subsecs, 0, sizeof subsecs);
+
+    is_seconds = true;
+    i = 0; j = 0, k = 0;
+    while(str[i]) {
+        if (is_seconds == true && str[i] == '.')
+            is_seconds = false;
+        else if (is_seconds == false && (str[i] < '0' || str[i] > '9'))
+            is_seconds = true;
+
+        if (is_seconds == true) seconds[j++] = str[i];
+        else subsecs[k++] = str[i];
+
+        i++;
     }
 
-    rv = ogs_time_gmt_get(timestamp, &tm, 0);
+    memset(&tm, 0, sizeof(tm));
+    ogs_strptime(seconds, "%Y-%m-%dT%H:%M:%S%z", &tm);
+    usecs = (ogs_time_t)(atof(subsecs) * 1000000);
+
+    rv = ogs_time_gmt_get(timestamp, &tm, usecs);
     if (rv != OGS_OK) {
         ogs_error("Cannot convert time [%s]", str);
         return false;
